@@ -7,11 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pl.jerzygajewski.game.entity.GameTitle;
 import pl.jerzygajewski.game.service.serviceInterfaces.GameTitleService;
-import pl.jerzygajewski.game.utill.GameTitleUtill;
+import pl.jerzygajewski.game.utill.noGame.kw.ps4.NoGameKWps4Games;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class GameController {
@@ -26,7 +25,7 @@ public class GameController {
     @ResponseBody
     public String saveTitle() {
         try {
-            GameTitleUtill gtu = new GameTitleUtill();
+            NoGameKWps4Games gtu = new NoGameKWps4Games();
             List<String> titleList = gtu.getGameData();
             GameTitle gameTitle = new GameTitle();
             for(String elem : titleList)
