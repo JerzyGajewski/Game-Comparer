@@ -5,32 +5,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import pl.jerzygajewski.game.entity.GameTitle;
-import pl.jerzygajewski.game.service.serviceInterfaces.GameTitleService;
-import pl.jerzygajewski.game.utill.noGame.kw.ps4.NoGameKWps4Games;
+import pl.jerzygajewski.game.utill.NoGameKWGames;
+import pl.jerzygajewski.game.utill.ShopGraczGames;
 
 import java.io.IOException;
-import java.util.List;
 
 @Controller
 public class GameController {
-    private GameTitleService gameTitleService;
+    private NoGameKWGames noGameKWGames;
+    private ShopGraczGames shopGraczGames;
 
     @Autowired
-    public GameController(GameTitleService gameTitleService) {
-        this.gameTitleService = gameTitleService;
+    public GameController(NoGameKWGames noGameKWGames, ShopGraczGames shopGraczGames) {
+        this.noGameKWGames = noGameKWGames;
+        this.shopGraczGames = shopGraczGames;
     }
 
-    @GetMapping()
+
+
+
+    @GetMapping("/start")
     @ResponseBody
-    public String saveTitle() {
+    public String saveGamesToDb() {
         try {
-            NoGameKWps4Games gtu = new NoGameKWps4Games();
-            List<String> titleList = gtu.getGameData();
-            GameTitle gameTitle = new GameTitle();
-            for(String elem : titleList)
-                gameTitle.setTitle(elem);
-                gameTitleService.save(gameTitle);
+               noGameKWGames.startScrapingForAllConsoles();
+               shopGraczGames.startScrapingForAllConsoles();
             }
          catch (IOException e) {
             e.printStackTrace();
