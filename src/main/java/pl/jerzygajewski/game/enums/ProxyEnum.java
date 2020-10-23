@@ -4,14 +4,13 @@ import lombok.Getter;
 
 @Getter
 public enum ProxyEnum {
-    S("80.241.222.139", 80), U("180.250.12.10", 80), P("83.96.237.121", 80),
-    E("140.227.229.208", 3128), R("96.113.165.182", 3128);
+    S("163.153.214.50", "8080"), U("216.250.236.10", "3128"), P("165.22.36.75", "8888");
 
     String Ip;
-    int port;
+    String port;
 
-    ProxyEnum(String ip, int port) {
-        Ip = ip;
+    ProxyEnum(String ip, String port) {
+        this.Ip = ip;
         this.port = port;
     }
 }

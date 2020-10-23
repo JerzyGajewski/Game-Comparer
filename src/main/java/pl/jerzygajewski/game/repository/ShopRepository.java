@@ -9,6 +9,6 @@ import java.util.List;
 public interface ShopRepository extends JpaRepository<ShopInfo, Long> {
     ShopInfo findByName(String shopName);
 
-    @Query("select s from ShopInfo s order by s.scrapDate asc ")
-    List<ShopInfo> findByDate();
+//    @Query("select s from ShopInfo s order by s.scrapDate asc ")
+    List<ShopInfo> findFirstByOrderByScrapDateAsc();
 }

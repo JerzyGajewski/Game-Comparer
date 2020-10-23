@@ -15,7 +15,13 @@ import pl.jerzygajewski.game.repository.GameRepository;
 import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.interfaces.ScrapInterface;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +40,11 @@ public class ShopGraczGames implements ScrapInterface {
                     "", ".js-product-miniature .product_desc .product_name",
                     ".js-product-miniature .product-price-and-shipping .price",
                     ".js-product-miniature .img_block img",
-                    ".pagination .page-list li", ".js-product-miniature .img_block")
+                    ".pagination .page-list li", ".js-product-miniature .img_block",
+                    ".js-product-miniature")
     };
 
+    int currentProxy = 0;
     private ShopRepository shopRepository;
     private GameRepository gameRepository;
 
@@ -49,15 +57,13 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
-        int counter = 0;
-//            for (int i = 0; i < ProxyEnum.values().length; i++) {
-//                Connection connect = Jsoup.connect(configurationModel.getFirstPageUrl()).proxy(ProxyEnum.values()[i].getIp(),
-//                        ProxyEnum.values()[i].getPort());
-//        if(i == (ProxyEnum.values().length)-1)  {
-//            i = 0;
-//        }
-        Connection connect = Jsoup.connect(configurationModel.getFirstPageUrl());
-        return connect.get();
+
+            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
+            Connection conn = Jsoup.connect(configurationModel.getFirstPageUrl());
+            Document document = conn.get();
+
+        return document;
     }
 
     @Override
@@ -75,13 +81,14 @@ public class ShopGraczGames implements ScrapInterface {
         pictures.toArray(pictureElement);
 
         Elements all = document.select(".js-product-miniature .img_block");
-        Element[] eee = new Element[all.size()];
-        all.toArray(eee);
+        Element[] elements = new Element[all.size()];
+        all.toArray(elements);
 
         Element avalable = document.select(configurationModel.getNotAvalable()).select("p").first();
 
-
-
+        Elements games = document.select(configurationModel.getGameId());
+        Element[] gameId = new Element[games.size()];
+        games.toArray(gameId);
 
         List<Game> titles = new ArrayList<>();
 
@@ -90,9 +97,12 @@ public class ShopGraczGames implements ScrapInterface {
             gameTitle.setTitle(nameElement[i].text());
             gameTitle.setPrice(priceElement[i].text());
             gameTitle.setConsoleType(configurationModel.getConsole());
-            if(eee[i].text().toLowerCase().trim().contains("chwilowo niedostępny")) {
+            if (elements[i].text().toLowerCase().trim().contains("chwilowo niedostępny")) {
                 gameTitle.setAvalable(avalable.text());
+            } else {
+                gameTitle.setAvalable("Dostępny");
             }
+            gameTitle.setGameShopId(gameId[i].attr("data-id-product"));
             gameTitle.setImg(pictureElement[i].attr("src"));
             titles.add(gameTitle);
         }
@@ -109,6 +119,7 @@ public class ShopGraczGames implements ScrapInterface {
         }
         //in loop save to db - add or update
         for (Game name : games) {
+//        find by id from site from shop
             gameRepository.save(name);
         }
         shopInfo.setScrapDate(LocalDateTime.now());
@@ -151,7 +162,13 @@ public class ShopGraczGames implements ScrapInterface {
     @Override
     public void startScrapingForAllConsoles() throws IOException {
         for (int i = 0; i < MODEL.length; i++) {
+
+            if(currentProxy == ProxyEnum.values().length){
             startScrapping(MODEL[i]);
+
+            }
+            startScrapping(MODEL[i]);
+            currentProxy++;
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {

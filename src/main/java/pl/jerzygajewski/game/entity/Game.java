@@ -20,6 +20,7 @@ public class Game {
     String price;
     String img;
     String avalable;
+    String gameShopId;
 
     String consoleType;
 
