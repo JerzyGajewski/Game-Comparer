@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+   <head>
+      <title>Doctor Search Form a Flat Responsive Widget Template :: w3layouts </title>
+      <!-- Meta tags -->
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <meta name="keywords" content="Doctor Search Form Responsive Widget, Audio and Video players, Login Form Web Template, Flat Pricing Tables, Flat Drop-Downs, Sign-Up Web Templates, Flat Web Templates, Login Sign-up Responsive Web Template, Smartphone Compatible Web Template, Free Web Designs for Nokia, Samsung, LG, Sony Ericsson, Motorola Web Design"
+         />
+      <script>
+         addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); }
+      </script>
+      <!-- Meta tags -->
+      <!-- Calendar -->
+      <link rel="stylesheet" href="../static/css/jquery-ui.css" th:href="@{/css/jquery-ui.css}"/>
+      <!-- //Calendar -->
+      <!--stylesheets-->
+      <link href="../static/css/style.css" rel='stylesheet' type='text/css' media="all" th:href="@{/css/style.css}"/>
+      <!--//style sheet end here-->
+      <link href="//fonts.googleapis.com/css?family=Cuprum:400,700" rel="stylesheet">
+   </head>
+   <body>
+      <h1 class="header-w3ls">
+         Doctor Search Form
+      </h1>
+      <div class="doctor-form">
+         <h2 class="doctor-list-w3l">Search For Games</h2>
+         <form action="/result" method="post">
+            <div class="main">
+               <div class="form-left-to-w3l">
+                  <input type="text" name="name" placeholder="Game name">
+                  <div class="clear"></div>
+               </div>
+               <div class="form-right-to-w3l">
+                  <select class="form-control">
+                     <option value="">Select City</option>
+                     <option>Kraków</option>
+                  </select>
+               </div>
+            </div>
+            <div class="clear"></div>
+
+            <div class="main">
+               <div class="form-left-to-w3l">
+                  <div class="grid-outs1">
+                     <div class="w3-agile1">
+                        <label class="rating">Select Console</label>
+                        <ul>
+                           <li>
+                              <input type="radio" id="a-option" name="selector1">
+                              <label for="a-option">Ps4</label>
+                              <div class="check"></div>
+                           </li>
+                           <li>
+                              <input type="radio" id="b-option" name="selector1">
+                              <label for="b-option">Ps3</label>
+                              <div class="check">
+                                 <div class="inside"></div>
+                              </div>
+                           </li>
+                           <li>
+                              <input type="radio" id="c-option" name="selector1">
+                              <label for="c-option">Xbox360</label>
+                              <div class="check">
+                                 <div class="inside"></div>
+                              </div>
+                           </li>
+                           <li>
+                              <input type="radio" id="d-option" name="selector1">
+                              <label for="d-option">XboxOne</label>
+                              <div class="check">
+                                 <div class="inside"></div>
+                              </div>
+                           </li>
+                           <li>
+                              <input type="radio" id="e-option" name="selector1">
+                              <label for="e-option">Switch</label>
+                              <div class="check">
+                                 <div class="inside"></div>
+                              </div>
+                           </li>
+                        </ul>
+                     </div>
+                  </div>
+                  <div class="clear"></div>
+               </div>
+                  <div class="form-right-to-w3l gap-top">
+                  <select class="form-control">
+                     <option value="">
+                        Select Shop
+                     </option>
+                     <option value="category2">NoGame KW</option>
+                     <option value="category1">NoGame NH</option>
+                     <option value="category3">ShopGracz</option>
+                     <option value="category4">GameOver</option>
+                  </select>
+                  <div class="clear"></div>
+               </div>
+               </div>
+            <div class="btnn">
+               <button type="submit">SEARCH</button><br>
+            </div>
+         </form>
+      </div>
+      <div class="copy">
+         <p>&copy; 2018 Doctor Search Form. All Rights Reserved | Design by <a href="http://www.W3Layouts.com" target="_blank">W3Layouts</a></p>
+      </div>
+      <!--scripts-->
+      <script src='/static/js/jquery-2.2.3.min.js' th:href="@{/js/jquery-2.2.3.min.js}"></script>
+      <!--//scripts-->
+      <!-- //js -->
+      <!-- Calendar -->
+      <script src="/static/js/jquery-ui.js" th:href="@{/js/jquery-ui.js}"></script>
+      <script>
+         $(function() {
+         $( "#datepicker,#datepicker1,#datepicker2,#datepicker3" ).datepicker();
+         });
+      </script>
+      <!-- //Calendar -->
+   </body>
+</html>

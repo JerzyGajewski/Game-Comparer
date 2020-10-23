@@ -1,11 +1,9 @@
 package pl.jerzygajewski.game.service.serviceInterfaces;
 
-import pl.jerzygajewski.game.service.ScrapingService;
-import pl.jerzygajewski.game.service.interfaces.ScrapInterface;
+import java.io.IOException;
 
 public interface MainScrappingService{
 
-//    void startScrapping();
-//    ScrapingService getServiceToScrap();
+void getServiceToScrap() throws IOException;
 
 }

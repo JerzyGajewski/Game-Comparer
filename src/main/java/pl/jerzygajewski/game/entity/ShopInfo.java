@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,9 +19,10 @@ public class ShopInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
+    LocalDateTime scrapDate;
 
 @OneToMany(mappedBy = "shop")
-    private List<Game> Game;
+    private List<Game> Game = new ArrayList<>();
 
 
 }

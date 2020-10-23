@@ -6,57 +6,94 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
-import pl.jerzygajewski.game.consoleTypeEnum.ConsoleEnum;
 import pl.jerzygajewski.game.entity.Game;
 import pl.jerzygajewski.game.entity.ShopInfo;
+import pl.jerzygajewski.game.enums.ProxyEnum;
+import pl.jerzygajewski.game.enums.ShopEnum;
+import pl.jerzygajewski.game.model.ConfigurationModel;
 import pl.jerzygajewski.game.repository.GameRepository;
 import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.interfaces.ScrapInterface;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ShopGraczGames implements ScrapInterface {
+    static ConfigurationModel[] MODEL = {
+//            new ConfigurationModel("ps4", "https://shopgracz.pl/s-1/menu-playstation_4",
+//                    "https://shopgracz.pl/s-1/menu-playstation_4?order=product.name.asc&page=",
+//                    ".js-product-miniature .product_desc .product_name",
+//                    ".js-product-miniature .product-price-and-shipping .price",
+//                    ".js-product-miniature .img_block img",
+//                    ".pagination .page-list li"),
+            new ConfigurationModel("switch", "https://shopgracz.pl/30-nintendo-switch",
+                    "", ".js-product-miniature .product_desc .product_name",
+                    ".js-product-miniature .product-price-and-shipping .price",
+                    ".js-product-miniature .img_block img",
+                    ".pagination .page-list li", ".js-product-miniature .img_block")
+    };
 
     private ShopRepository shopRepository;
     private GameRepository gameRepository;
+
 
     public ShopGraczGames(ShopRepository shopRepository, GameRepository gameRepository) {
         this.shopRepository = shopRepository;
         this.gameRepository = gameRepository;
     }
 
+
     @Override
-    public Document connectToSite(String url) throws IOException {
-        Connection connect = Jsoup.connect(url);
+    public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
+        int counter = 0;
+//            for (int i = 0; i < ProxyEnum.values().length; i++) {
+//                Connection connect = Jsoup.connect(configurationModel.getFirstPageUrl()).proxy(ProxyEnum.values()[i].getIp(),
+//                        ProxyEnum.values()[i].getPort());
+//        if(i == (ProxyEnum.values().length)-1)  {
+//            i = 0;
+//        }
+        Connection connect = Jsoup.connect(configurationModel.getFirstPageUrl());
         return connect.get();
     }
 
     @Override
-    public List<Game> scrapGames(Document document, ConsoleEnum consoleEnum, String[] elementValue) {
-        Elements name = document.select(elementValue[0]);
+    public List<Game> scrapGames(Document document, ConfigurationModel configurationModel) {
+        Elements name = document.select(configurationModel.getTitleSelector());
         Element[] nameElement = new Element[name.size()];
         name.toArray(nameElement);
 
-        Elements price = document.select(elementValue[1]);
+        Elements price = document.select(configurationModel.getPriceSelector());
         Element[] priceElement = new Element[price.size()];
         price.toArray(priceElement);
 
-//        Elements pictures = document.getElementsByClass("prodimage f-row");
-//        Element[] pictureElement = new Element[pictures.size()];
-//        pictures.toArray(pictureElement);
+        Elements pictures = document.select(configurationModel.getImageSelector());
+        Element[] pictureElement = new Element[pictures.size()];
+        pictures.toArray(pictureElement);
+
+        Elements all = document.select(".js-product-miniature .img_block");
+        Element[] eee = new Element[all.size()];
+        all.toArray(eee);
+
+        Element avalable = document.select(configurationModel.getNotAvalable()).select("p").first();
+
+
+
 
         List<Game> titles = new ArrayList<>();
 
-        for (int i = 0; i <name.size(); i++) {
+        for (int i = 0; i < name.size(); i++) {
             Game gameTitle = new Game();
             gameTitle.setTitle(nameElement[i].text());
             gameTitle.setPrice(priceElement[i].text());
-            gameTitle.setConsoleType(consoleEnum.getName()); //enum - typy enumeryczne
-//            gameTitle.setImg(pictureElement[i].attr("data-src")); //48
-//            gameTitle.setImg(picture.get(i).text());
+            gameTitle.setConsoleType(configurationModel.getConsole());
+            if(eee[i].text().toLowerCase().trim().contains("chwilowo niedostępny")) {
+                gameTitle.setAvalable(avalable.text());
+            }
+            gameTitle.setImg(pictureElement[i].attr("src"));
             titles.add(gameTitle);
         }
         return titles;
@@ -65,49 +102,64 @@ public class ShopGraczGames implements ScrapInterface {
     @Override
     public void saveGames(List<Game> games) {
         //repo get shop
-        ShopInfo shopInfo = shopRepository.findById(2L).orElseGet(null);
+        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
         //loop over games && connect with shop
-        for(Game name : games ){
+        for (Game name : games) {
             name.setShop(shopInfo);
         }
         //in loop save to db - add or update
-        for(Game name : games){
+        for (Game name : games) {
             gameRepository.save(name);
+        }
+        shopInfo.setScrapDate(LocalDateTime.now());
+        shopRepository.save(shopInfo);
+    }
+
+    @Override
+    public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
+        Elements siteNumber = document.select(configurationModel.getLastPageSelector());
+        if (siteNumber.size() > 0) {
+            String number = siteNumber.get(siteNumber.size() - 2).text();
+            return number;
+        } else {
+            return configurationModel.getFirstPageUrl();
         }
     }
 
     @Override
-    public void startScrapping(String url, ConsoleEnum consoleEnum, String[] elementValue) throws IOException {
-        Document document = connectToSite(url);
-        List<Game> games = scrapGames(document, consoleEnum, elementValue);
-        saveGames(games);
+    public void startScrapping(ConfigurationModel configurationModel) throws IOException {
+        Document document = connectToSite(configurationModel);
+        String number = getPageNumbers(document, configurationModel);
+        if (number.equals(configurationModel.getFirstPageUrl())) {
+            List<Game> games = scrapGames(document, configurationModel);
+            saveGames(games);
+        } else {
+            int lastSiteNumber = Integer.parseInt(number);
+            for (int i = 1; i < lastSiteNumber; i++) {
+                List<Game> games = scrapGames(document, configurationModel);
+                saveGames(games);
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//        wait time!
+            }
+        }
     }
 
     @Override
     public void startScrapingForAllConsoles() throws IOException {
-        for (int i = 0; i <ConsoleEnum.values().length; i++) {
-            switch (ConsoleEnum.values()[i]){
-                case PS3:
-//                    String ps3 = "";
-//                    startScrapping(ps3);
-                    break;
-                case PS4:
-//                    String ps4 = "https://www.nogame.pl/pl/c/PlayStation-4/140";
-//                    String[] elementValues = {".products.viewphot .product .productname", ".products.viewphot .product .price"};
-//                    startScrapping(ps4, ConsoleEnum.values()[i], elementValues);
-                    break;
-                case XBOX360:
-//                    String xboxOne = "i co";
-//                    startScrapping(xboxOne);
-                    break;
-                case XBOXONE:
-                    break;
-                case NINTENDOSWITCH:
-                    String nintendo = "https://shopgracz.pl/30-nintendo-switch";
-                    String[] element = {".js-product-miniature .product_desc .product_name", ".js-product-miniature .product-price-and-shipping .price"};
-                    startScrapping(nintendo,ConsoleEnum.values()[i], element);
-                    break;
+        for (int i = 0; i < MODEL.length; i++) {
+            startScrapping(MODEL[i]);
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+//            wait time!
+            // getconfig for enum
+            //startScrapping(config);
         }
     }
 }

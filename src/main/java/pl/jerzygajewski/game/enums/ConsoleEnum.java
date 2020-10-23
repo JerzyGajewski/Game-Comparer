@@ -1,4 +1,4 @@
-package pl.jerzygajewski.game.consoleTypeEnum;
+package pl.jerzygajewski.game.enums;
 
 import lombok.Getter;
 

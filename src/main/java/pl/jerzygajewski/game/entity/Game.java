@@ -3,7 +3,6 @@ package pl.jerzygajewski.game.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pl.jerzygajewski.game.consoleTypeEnum.ConsoleEnum;
 
 import javax.persistence.*;
 
@@ -20,6 +19,7 @@ public class Game {
     String title;
     String price;
     String img;
+    String avalable;
 
     String consoleType;
 
