@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface MainScrappingService{
 
-void getServiceToScrap() throws IOException;
+void getServiceToScrap() throws IOException, InterruptedException;
 
 }

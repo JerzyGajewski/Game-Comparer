@@ -11,4 +11,5 @@ public interface ShopRepository extends JpaRepository<ShopInfo, Long> {
 
 //    @Query("select s from ShopInfo s order by s.scrapDate asc ")
     List<ShopInfo> findFirstByOrderByScrapDateAsc();
+
 }

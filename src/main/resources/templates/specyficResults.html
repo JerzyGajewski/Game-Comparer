@@ -24,124 +24,22 @@
     <div class="flipster">
         <ul>
 
-            <li th:each="shops : ${shop}">
+            <li th:each="game : *{games}">
                 <div class="pricing">
                     <div class="pricing-top green-top">
-                        <h3 th:text="${shop.getName()}"></h3>
-                        <p>$50/month</p>
+                        <h3 th:text="${game.title}"></h3>
+                        <h5 th:text="${game.shop.name}"></h5>
                     </div>
                     <div class="pricing-bottom">
                         <div class="pricing-bottom-top">
-                            <p><img th:src="@{/assets/img/demo-image-02.jpg}" alt=""></p>
+                            <p><img th:src="${game.getImg()}" alt=""></p>
                         </div>
                         <div class="pricing-bottom-bottom">
-                            <p><span>${game.title}</span> </p>
-                            <p></p>
-                            <p></p>
-                            <p><span>${game.price}</span></p>
+                            <p><span th:text="'CENA : ' + ${game.price}"></span> </p>
+                            <p><span th:text="${game.avalable}" style="color: green"></span></p>
                         </div>
                         <div class="buy-button">
                             <a href="#">Show info</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="pricing">
-                    <div class="pricing-top blue-top">
-                        <h3>Corporate</h3>
-                        <p>$70/month</p>
-                    </div>
-                    <div class="pricing-bottom">
-                        <div class="pricing-bottom-top">
-                            <p>1 Website</p>
-                            <p>1 Year Updates</p>
-                            <p>1 Year Email Support</p>
-                        </div>
-                        <div class="pricing-bottom-bottom">
-                            <p><span>Unlimited</span> Email Addresses</p>
-                            <p><span>85GB </span> of Storage</p>
-                            <p><span>65</span> Databases</p>
-                            <p><span>30</span> Domains</p>
-                            <p class="text"><span>24/7</span> Unlimited Support</p>
-                        </div>
-                        <div class="buy-button">
-                            <a href="#">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="pricing">
-                    <div class="pricing-top">
-                        <h3>Personal</h3>
-                        <p>$35/month</p>
-                    </div>
-                    <div class="pricing-bottom">
-                        <div class="pricing-bottom-top">
-                            <p>1 Website</p>
-                            <p>1 Year Updates</p>
-                            <p>1 Year Email Support</p>
-                        </div>
-                        <div class="pricing-bottom-bottom">
-                            <p><span>Unlimited</span> Email Addresses</p>
-                            <p><span>50GB </span> of Storage</p>
-                            <p><span>55</span> Databases</p>
-                            <p><span>21</span> Domains</p>
-                            <p class="text"><span>24/7</span> Unlimited Support</p>
-                        </div>
-                        <div class="buy-button">
-                            <a href="#">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="pricing">
-                    <div class="pricing-top green-top">
-                        <h3>Business</h3>
-                        <p>$50/month</p>
-                    </div>
-                    <div class="pricing-bottom">
-                        <div class="pricing-bottom-top">
-                            <p>1 Website</p>
-                            <p>1 Year Updates</p>
-                            <p>1 Year Email Support</p>
-                        </div>
-                        <div class="pricing-bottom-bottom">
-                            <p><span>Unlimited</span> Email Addresses</p>
-                            <p><span>65GB </span> of Storage</p>
-                            <p><span>75</span> Databases</p>
-                            <p><span>25</span> Domains</p>
-                            <p class="text"><span>24/7</span> Unlimited Support</p>
-                        </div>
-                        <div class="buy-button">
-                            <a href="#">Add to cart</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
-            <li>
-                <div class="pricing">
-                    <div class="pricing-top">
-                        <h3>Personal</h3>
-                        <p>$35/month</p>
-                    </div>
-                    <div class="pricing-bottom">
-                        <div class="pricing-bottom-top">
-                            <p>1 Website</p>
-                            <p>1 Year Updates</p>
-                            <p>1 Year Email Support</p>
-                        </div>
-                        <div class="pricing-bottom-bottom">
-                            <p><span>Unlimited</span> Email Addresses</p>
-                            <p><span>50GB </span> of Storage</p>
-                            <p><span>55</span> Databases</p>
-                            <p><span>21</span> Domains</p>
-                            <p class="text"><span>24/7</span> Unlimited Support</p>
-                        </div>
-                        <div class="buy-button">
-                            <a href="#">Add to cart</a>
                         </div>
                     </div>
                 </div>
@@ -154,7 +52,7 @@
     </div>
     <!-- End Flipster List -->
 </div>
-<script src="../static/js/jquery.flipster.js" th:href="@{/js/jquery.flipster.js}"></script>
+<script src="../static/js/jquery.flipster.js" th:src="@{/js/jquery.flipster.js}"></script>
 <script>
 
     $(function () {

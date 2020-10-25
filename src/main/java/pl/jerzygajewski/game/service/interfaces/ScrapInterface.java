@@ -9,16 +9,21 @@ import java.util.List;
 
 public interface ScrapInterface {
 
-    Document connectToSite(ConfigurationModel configurationModel) throws IOException;
-
-    List<Game> scrapGames(Document document, ConfigurationModel configurationModel);
-
-    void saveGames(List<Game> games);
-
-    String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException;
+    void startScrapingForAllConsoles() throws IOException;
 
     void startScrapping(ConfigurationModel configurationModel) throws IOException;
 
-    void startScrapingForAllConsoles() throws IOException;
+    Document connectToSite(ConfigurationModel configurationModel) throws IOException;
+
+    String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException;
+
+    List<Game> scrapGames(Document document, ConfigurationModel configurationModel);
+
+    List<Game> addOrUpdate(List<Game> game);
+
+    void removeGame(List<Game> games);
+
+    void saveOrRemoveGames(List<Game> games);
+
 
 }

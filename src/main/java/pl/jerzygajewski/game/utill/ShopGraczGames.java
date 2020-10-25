@@ -15,13 +15,7 @@ import pl.jerzygajewski.game.repository.GameRepository;
 import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.interfaces.ScrapInterface;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,16 +48,70 @@ public class ShopGraczGames implements ScrapInterface {
         this.gameRepository = gameRepository;
     }
 
+    @Override
+    public void startScrapingForAllConsoles() throws IOException {
+        for (int i = 0; i < MODEL.length; i++) {
+
+            if (currentProxy == ProxyEnum.values().length) {
+                startScrapping(MODEL[i]);
+                currentProxy = 0;
+            }
+            startScrapping(MODEL[i]);
+            currentProxy++;
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            wait time!
+            // getconfig for enum
+            //startScrapping(config);
+        }
+    }
+
+    @Override
+    public void startScrapping(ConfigurationModel configurationModel) throws IOException {
+        Document document = connectToSite(configurationModel);
+        String number = getPageNumbers(document, configurationModel);
+        if (number.equals(configurationModel.getFirstPageUrl())) {
+            List<Game> games = scrapGames(document, configurationModel);
+            saveOrRemoveGames(games);
+        } else {
+            int lastSiteNumber = Integer.parseInt(number);
+            for (int i = 1; i < lastSiteNumber; i++) {
+                List<Game> games = scrapGames(document, configurationModel);
+                saveOrRemoveGames(games);
+                try {
+                    TimeUnit.SECONDS.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+//        wait time!
+            }
+        }
+    }
+
 
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
 
-            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-            Connection conn = Jsoup.connect(configurationModel.getFirstPageUrl());
-            Document document = conn.get();
+        System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+        System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
+        Connection conn = Jsoup.connect(configurationModel.getFirstPageUrl());
+        Document document = conn.get();
 
         return document;
+    }
+
+    @Override
+    public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
+        Elements siteNumber = document.select(configurationModel.getLastPageSelector());
+        if (siteNumber.size() > 0) {
+            String number = siteNumber.get(siteNumber.size() - 2).text();
+            return number;
+        } else {
+            return configurationModel.getFirstPageUrl();
+        }
     }
 
     @Override
@@ -91,8 +139,10 @@ public class ShopGraczGames implements ScrapInterface {
         games.toArray(gameId);
 
         List<Game> titles = new ArrayList<>();
+        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
 
         for (int i = 0; i < name.size(); i++) {
+
             Game gameTitle = new Game();
             gameTitle.setTitle(nameElement[i].text());
             gameTitle.setPrice(priceElement[i].text());
@@ -104,79 +154,62 @@ public class ShopGraczGames implements ScrapInterface {
             }
             gameTitle.setGameShopId(gameId[i].attr("data-id-product"));
             gameTitle.setImg(pictureElement[i].attr("src"));
+            gameTitle.setShop(shopInfo);
+
             titles.add(gameTitle);
         }
+
         return titles;
     }
 
     @Override
-    public void saveGames(List<Game> games) {
-        //repo get shop
+    public List<Game> addOrUpdate(List<Game> newList) {
+        List<Game> gameList = new ArrayList<>();
+        for (int i = 0; i < newList.size(); i++) {
+            if (gameRepository.findByGameShopId(newList.get(i).getGameShopId(), newList.get(i).getShop().getName()) != null) {
+                Game gameToUpdate = gameRepository.findByGameShopId(newList.get(i).getGameShopId(), newList.get(i).getShop().getName());
+                gameToUpdate.setTitle(newList.get(i).getTitle());
+                gameToUpdate.setImg(newList.get(i).getImg());
+                gameToUpdate.setPrice(newList.get(i).getPrice());
+                gameToUpdate.setAvalable(newList.get(i).getAvalable());
+                gameList.add(gameToUpdate);
+            } else {
+                gameList.add(newList.get(i));
+            }
+        }
+        return gameList;
+    }
+
+    @Override
+    public void removeGame(List<Game> newList) {
+        List<String> shopIdNewList = new ArrayList<>();
+        for (Game game : newList) {
+            shopIdNewList.add(game.getGameShopId());
+        }
+        List<Game> oldGameList = gameRepository.findAllGamesFromShop(newList.get(0).getShop().getName());
+        List<String> shopIdOldGame = new ArrayList<>();
+        for (Game game : oldGameList) {
+            shopIdOldGame.add(game.getGameShopId());
+        }
+        shopIdOldGame.removeAll(shopIdNewList);
+        if(shopIdOldGame.size() != 0) {
+            // czy nie wywali błędu
+            for (int j = 0; j < shopIdOldGame.size(); j++) {
+                Game gameToRemove = gameRepository.findByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
+                oldGameList.remove(gameToRemove);
+            }
+        }
+    }
+
+    @Override
+    public void saveOrRemoveGames(List<Game> newList) {
+        List<Game> gamesToSave = addOrUpdate(newList);
+        for (Game games : gamesToSave) {
+            gameRepository.save(games);
+        }
+        removeGame(newList);
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
-        //loop over games && connect with shop
-        for (Game name : games) {
-            name.setShop(shopInfo);
-        }
-        //in loop save to db - add or update
-        for (Game name : games) {
-//        find by id from site from shop
-            gameRepository.save(name);
-        }
         shopInfo.setScrapDate(LocalDateTime.now());
         shopRepository.save(shopInfo);
-    }
-
-    @Override
-    public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
-        Elements siteNumber = document.select(configurationModel.getLastPageSelector());
-        if (siteNumber.size() > 0) {
-            String number = siteNumber.get(siteNumber.size() - 2).text();
-            return number;
-        } else {
-            return configurationModel.getFirstPageUrl();
-        }
-    }
-
-    @Override
-    public void startScrapping(ConfigurationModel configurationModel) throws IOException {
-        Document document = connectToSite(configurationModel);
-        String number = getPageNumbers(document, configurationModel);
-        if (number.equals(configurationModel.getFirstPageUrl())) {
-            List<Game> games = scrapGames(document, configurationModel);
-            saveGames(games);
-        } else {
-            int lastSiteNumber = Integer.parseInt(number);
-            for (int i = 1; i < lastSiteNumber; i++) {
-                List<Game> games = scrapGames(document, configurationModel);
-                saveGames(games);
-                try {
-                    TimeUnit.SECONDS.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-//        wait time!
-            }
-        }
-    }
-
-    @Override
-    public void startScrapingForAllConsoles() throws IOException {
-        for (int i = 0; i < MODEL.length; i++) {
-
-            if(currentProxy == ProxyEnum.values().length){
-            startScrapping(MODEL[i]);
-
-            }
-            startScrapping(MODEL[i]);
-            currentProxy++;
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-//            wait time!
-            // getconfig for enum
-            //startScrapping(config);
-        }
     }
 }
