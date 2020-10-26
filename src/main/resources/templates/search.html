@@ -29,7 +29,7 @@
          <form action="/result" method="post">
             <div class="main">
                <div class="form-left-to-w3l">
-                  <input type="text" name="gameName" placeholder="Game name">
+                  <input type="text" th:name="gameName" placeholder="Game name">
                   <div class="clear"></div>
                </div>
                <div class="form-right-to-w3l">
@@ -43,12 +43,12 @@
 
             <div class="main">
                   <div class="form-left-to-w3l gap-top">
-                  <select class="form-control" id="1" th:field="*{shops}" required>
-                     <option value="">
+                  <select class="form-control" th:name="shopName" id="1" th:field="*{shops}" required>
+                     <option value="" selected>
                         Select Shop
                      </option>
-                     <option name="shopName" value="category0">All shops</option>
-                      <option name="shopName" th:value="${shop.name}" th:each="shop : ${shops}" th:text="${shop.name}"></option>
+                     <option  th:value="category0">All shops</option>
+                      <option th:name="${shop.name}" th:value="${shop.name}" th:each="shop : ${shops}" th:text="${shop.name}"></option>
                   </select>
                   <div class="clear"></div>
                </div>
@@ -57,24 +57,23 @@
                   <div class="grid-outs1">
                      <div class="w3-agile1" >
                         <label class="rating">Select Console</label>
-                        <ul>
 
-                              <input type="radio" id="a-option" name="selector1">
+                              <input type="radio" id="a-option" th:name="console" th:value="Ps4">
                               <label for="a-option">Ps4</label>
 
 
-                              <input type="radio" id="b-option" name="selector1">
+                              <input type="radio" id="b-option" th:name="console" th:value="Ps3">
                               <label for="b-option">Ps3</label>
 
-                              <input type="radio" id="c-option" name="selector1">
+                              <input type="radio" id="c-option" th:name="console" th:value="Xbox360">
                               <label for="c-option">Xbox360</label>
 
 
-                              <input type="radio" id="d-option" name="selector1">
+                              <input type="radio" id="d-option" th:name="console" th:value="XboxOne">
                               <label for="d-option">XboxOne</label>
 
 
-                              <input type="radio" id="e-option" name="selector1">
+                            <input type="radio" id="e-option" th:name="console" th:value="Switch">
                               <label for="e-option">Switch</label>
 
                         </ul>

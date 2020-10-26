@@ -36,7 +36,8 @@
                         </div>
                         <div class="pricing-bottom-bottom">
                             <p><span th:text="'CENA : ' + ${game.price}"></span> </p>
-                            <p><span th:text="${game.avalable}" style="color: green"></span></p>
+                            <p><span th:text="${game.avalable}" th:if="${game.avalable.equals('Dostępny')}" style="color: green"></span></p>
+                            <p><span th:text="${game.avalable}" th:if="${!game.avalable.equals('Dostępny')}" style="color: red"></span></p>
                         </div>
                         <div class="buy-button">
                             <a href="#">Show info</a>

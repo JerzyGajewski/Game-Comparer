@@ -15,9 +15,11 @@ public interface ScrapInterface {
 
     Document connectToSite(ConfigurationModel configurationModel) throws IOException;
 
+    Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException;
+
     String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException;
 
-    List<Game> scrapGames(Document document, ConfigurationModel configurationModel);
+    List<Game> scrapGames(Document document, ConfigurationModel configurationModel) throws IOException;
 
     List<Game> addOrUpdate(List<Game> game);
 

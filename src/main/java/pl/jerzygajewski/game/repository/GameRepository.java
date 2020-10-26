@@ -12,6 +12,8 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     List<Game> findAllGamesFromShop(String shopName);
 
     @Query("select g from Game g where g.gameShopId = :id and g.shop.name = :shop")
-    Game findByGameShopId(String id, String shop);
+    Game findGameByGameShopId(String id, String shop);
 
+    @Query("select g from Game g where g.title like %?1% and g.consoleType like %?2%")
+    List<Game> searchGames(String gameName, String console);
 }

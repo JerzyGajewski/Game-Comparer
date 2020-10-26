@@ -24,17 +24,25 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class ShopGraczGames implements ScrapInterface {
     static ConfigurationModel[] MODEL = {
-//            new ConfigurationModel("ps4", "https://shopgracz.pl/s-1/menu-playstation_4",
-//                    "https://shopgracz.pl/s-1/menu-playstation_4?order=product.name.asc&page=",
-//                    ".js-product-miniature .product_desc .product_name",
-//                    ".js-product-miniature .product-price-and-shipping .price",
-//                    ".js-product-miniature .img_block img",
-//                    ".pagination .page-list li"),
-            new ConfigurationModel("switch", "https://shopgracz.pl/30-nintendo-switch",
-                    "", ".js-product-miniature .product_desc .product_name",
+            new ConfigurationModel(
+                    "ps4",
+                    "https://shopgracz.pl/s-1/menu-playstation_4?order=product.name.asc&page=1",
+                    "https://shopgracz.pl/s-1/menu-playstation_4?order=product.name.asc&page=",
+                    ".js-product-miniature .product_desc .product_name",
                     ".js-product-miniature .product-price-and-shipping .price",
                     ".js-product-miniature .img_block img",
-                    ".pagination .page-list li", ".js-product-miniature .img_block",
+                    ".pagination .page-list li",
+                    ".js-product-miniature .img_block",
+                    ".js-product-miniature"),
+            new ConfigurationModel(
+                    "switch",
+                    "https://shopgracz.pl/30-nintendo-switch",
+                    "https://shopgracz.pl/30-nintendo-switch?page=",
+                    ".js-product-miniature .product_desc .product_name",
+                    ".js-product-miniature .product-price-and-shipping .price",
+                    ".js-product-miniature .img_block img",
+                    ".pagination .page-list li",
+                    ".js-product-miniature .img_block",
                     ".js-product-miniature")
     };
 
@@ -78,8 +86,9 @@ public class ShopGraczGames implements ScrapInterface {
             saveOrRemoveGames(games);
         } else {
             int lastSiteNumber = Integer.parseInt(number);
-            for (int i = 1; i < lastSiteNumber; i++) {
-                List<Game> games = scrapGames(document, configurationModel);
+            for (int i = 1; i <= lastSiteNumber; i++) {
+                Document document1 = connectToSiteBySiteNumber(configurationModel, i);
+                List<Game> games = scrapGames(document1, configurationModel);
                 saveOrRemoveGames(games);
                 try {
                     TimeUnit.SECONDS.sleep(10);
@@ -104,6 +113,15 @@ public class ShopGraczGames implements ScrapInterface {
     }
 
     @Override
+    public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
+        System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+        System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
+        Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
+        Document document = conn.get();
+        return document;
+    }
+
+    @Override
     public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
         Elements siteNumber = document.select(configurationModel.getLastPageSelector());
         if (siteNumber.size() > 0) {
@@ -116,32 +134,22 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public List<Game> scrapGames(Document document, ConfigurationModel configurationModel) {
-        Elements name = document.select(configurationModel.getTitleSelector());
-        Element[] nameElement = new Element[name.size()];
-        name.toArray(nameElement);
+        Element[] nameElement = getName(document, configurationModel);
 
-        Elements price = document.select(configurationModel.getPriceSelector());
-        Element[] priceElement = new Element[price.size()];
-        price.toArray(priceElement);
+        Element[] priceElement = getPrice(document, configurationModel);
 
-        Elements pictures = document.select(configurationModel.getImageSelector());
-        Element[] pictureElement = new Element[pictures.size()];
-        pictures.toArray(pictureElement);
+        Element[] pictureElement = getImage(document, configurationModel);
 
-        Elements all = document.select(".js-product-miniature .img_block");
-        Element[] elements = new Element[all.size()];
-        all.toArray(elements);
+        Element[] elements = getAllGames(document);
 
         Element avalable = document.select(configurationModel.getNotAvalable()).select("p").first();
 
-        Elements games = document.select(configurationModel.getGameId());
-        Element[] gameId = new Element[games.size()];
-        games.toArray(gameId);
+        Element[] gameId = getGameId(document, configurationModel);
 
         List<Game> titles = new ArrayList<>();
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
 
-        for (int i = 0; i < name.size(); i++) {
+        for (int i = 0; i < priceElement.length; i++) {
 
             Game gameTitle = new Game();
             gameTitle.setTitle(nameElement[i].text());
@@ -162,17 +170,48 @@ public class ShopGraczGames implements ScrapInterface {
         return titles;
     }
 
+    private Element[] getGameId(Document document, ConfigurationModel configurationModel) {
+        Elements games = document.select(configurationModel.getGameId());
+        Element[] gameId = new Element[games.size()];
+        games.toArray(gameId);
+        return gameId;
+    }
+
+    private Element[] getAllGames(Document document) {
+        Elements all = document.select(".js-product-miniature .img_block");
+        Element[] elements = new Element[all.size()];
+        all.toArray(elements);
+        return elements;
+    }
+
+    private Element[] getImage(Document document, ConfigurationModel configurationModel) {
+        Elements pictures = document.select(configurationModel.getImageSelector());
+        Element[] pictureElement = new Element[pictures.size()];
+        pictures.toArray(pictureElement);
+        return pictureElement;
+    }
+
+    private Element[] getName(Document document, ConfigurationModel configurationModel) {
+        Elements name = document.select(configurationModel.getTitleSelector());
+        Element[] nameElement = new Element[name.size()];
+        name.toArray(nameElement);
+        return nameElement;
+    }
+
+    private Element[] getPrice(Document document, ConfigurationModel configurationModel) {
+        Elements price = document.select(configurationModel.getPriceSelector());
+        Element[] priceElement = new Element[price.size()];
+        price.toArray(priceElement);
+        return priceElement;
+    }
+
+    //błędy!
     @Override
     public List<Game> addOrUpdate(List<Game> newList) {
         List<Game> gameList = new ArrayList<>();
         for (int i = 0; i < newList.size(); i++) {
-            if (gameRepository.findByGameShopId(newList.get(i).getGameShopId(), newList.get(i).getShop().getName()) != null) {
-                Game gameToUpdate = gameRepository.findByGameShopId(newList.get(i).getGameShopId(), newList.get(i).getShop().getName());
-                gameToUpdate.setTitle(newList.get(i).getTitle());
-                gameToUpdate.setImg(newList.get(i).getImg());
-                gameToUpdate.setPrice(newList.get(i).getPrice());
-                gameToUpdate.setAvalable(newList.get(i).getAvalable());
-                gameList.add(gameToUpdate);
+            if (gameRepository.findGameByGameShopId(newList.get(i).getGameShopId(), newList.get(i).getShop().getName()) != null) {
+                updateGameData(newList, gameList, i);
             } else {
                 gameList.add(newList.get(i));
             }
@@ -180,25 +219,34 @@ public class ShopGraczGames implements ScrapInterface {
         return gameList;
     }
 
+    private void updateGameData(List<Game> newList, List<Game> gameList, int i) {
+        Game gameToUpdate = gameRepository.findGameByGameShopId(newList.get(i).getGameShopId(), newList.get(i).getShop().getName());
+        gameToUpdate.setTitle(newList.get(i).getTitle());
+        gameToUpdate.setImg(newList.get(i).getImg());
+        gameToUpdate.setPrice(newList.get(i).getPrice());
+        gameToUpdate.setAvalable(newList.get(i).getAvalable());
+        gameList.add(gameToUpdate);
+    }
+
     @Override
     public void removeGame(List<Game> newList) {
-        List<String> shopIdNewList = new ArrayList<>();
-        for (Game game : newList) {
-            shopIdNewList.add(game.getGameShopId());
-        }
-        List<Game> oldGameList = gameRepository.findAllGamesFromShop(newList.get(0).getShop().getName());
-        List<String> shopIdOldGame = new ArrayList<>();
-        for (Game game : oldGameList) {
-            shopIdOldGame.add(game.getGameShopId());
-        }
-        shopIdOldGame.removeAll(shopIdNewList);
-        if(shopIdOldGame.size() != 0) {
-            // czy nie wywali błędu
-            for (int j = 0; j < shopIdOldGame.size(); j++) {
-                Game gameToRemove = gameRepository.findByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
-                oldGameList.remove(gameToRemove);
-            }
-        }
+//        List<String> shopIdNewList = new ArrayList<>();
+//        for (Game game : newList) {
+//            shopIdNewList.add(game.getGameShopId());
+//        }
+//        List<Game> oldGameList = gameRepository.findAllGamesFromShop(newList.get(0).getShop().getName());
+//        List<String> shopIdOldGame = new ArrayList<>();
+//        for (Game game : oldGameList) {
+//            shopIdOldGame.add(game.getGameShopId());
+//        }
+//        shopIdOldGame.removeAll(shopIdNewList);
+//        if(shopIdOldGame.size() != 0) {
+//             czy nie wywali błędu
+//            for (int j = 0; j < shopIdOldGame.size(); j++) {
+//                Game gameToRemove = gameRepository.findGameByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
+//                oldGameList.remove(gameToRemove);
+//            }
+//        }
     }
 
     @Override
@@ -207,7 +255,7 @@ public class ShopGraczGames implements ScrapInterface {
         for (Game games : gamesToSave) {
             gameRepository.save(games);
         }
-        removeGame(newList);
+//        removeGame(newList);
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
         shopInfo.setScrapDate(LocalDateTime.now());
         shopRepository.save(shopInfo);
