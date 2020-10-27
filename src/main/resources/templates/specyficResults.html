@@ -9,6 +9,7 @@
     <meta name="keywords"
           content="Data Pricing Tables Responsive, Login form web template, Sign up Web Templates, Flat Web Templates, Login signup Responsive web template, Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design"/>
     <!-- //for-mobile-apps -->
+
     <link href='//fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic'
           rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="../static/css/css.Style/jquery.flipster.css"
@@ -16,53 +17,103 @@
     <link href="../static/css/css.Style/style.css" rel="stylesheet" type="text/css" media="all"
           th:href="@{/css/css.Style/style.css}"/>
     <script src="../static/js/jquery-2.1.4.min.js" th:href="@{/js/jquery-2.1.4.min.js}"></script>
+
+
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link th:href="@{/css/styles.css}" rel="stylesheet">
 </head>
-<body>
+<body id="page-top">
+
+
+
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Go up</a>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/start">Back to searcher</a></li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+
+
 <div class="content" id="Main-Content">
     <h1>Data Pricing Tables</h1>
     <!-- Flipster List -->
     <div class="flipster">
         <ul>
-
             <li th:each="game : *{games}">
                 <div class="pricing">
                     <div class="pricing-top green-top">
                         <h3 th:text="${game.title}"></h3>
-                        <h5 th:text="${game.shop.name}"></h5>
+                        <h5 th:name="shopName" th:text="${game.shop.name}"></h5>
+                        <div class="buy-button">
+                            <a href="/shopDetails" th:text="${game.shop.name}"></a>
+                        </div>
                     </div>
                     <div class="pricing-bottom">
                         <div class="pricing-bottom-top">
                             <p><img th:src="${game.getImg()}" alt=""></p>
                         </div>
                         <div class="pricing-bottom-bottom">
-                            <p><span th:text="'CENA : ' + ${game.price}"></span> </p>
-                            <p><span th:text="${game.avalable}" th:if="${game.avalable.equals('Dostępny')}" style="color: green"></span></p>
+                            <p><span th:text="'CENA : ' + ${game.price}" style="background-color: lightskyblue"></span> </p>
+                            <p><span th:text="${game.avalable}" th:if="${game.avalable.equals('Dostępny')}" style="color: lightgreen"></span></p>
                             <p><span th:text="${game.avalable}" th:if="${!game.avalable.equals('Dostępny')}" style="color: red"></span></p>
-                        </div>
-                        <div class="buy-button">
-                            <a href="#">Show info</a>
                         </div>
                     </div>
                 </div>
             </li>
         </ul>
+
     </div>
+<!--    <nav>-->
+<!--        <ul class="pagination">-->
+<!--            <li class="page-item">-->
+<!--                <a class="page-link" href="#" aria-label="Previous">-->
+<!--                    <span aria-hidden="true">&laquo;</span>-->
+<!--                    <span class="sr-only">Previous</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--            <li class="page-item"><a class="page-link" href="#">1</a></li>-->
+<!--            <li class="page-item"><a class="page-link" href="#">2</a></li>-->
+<!--            <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+<!--            <li class="page-item">-->
+<!--                <a class="page-link" href="#" aria-label="Next">-->
+<!--                    <span aria-hidden="true">&raquo;</span>-->
+<!--                    <span class="sr-only">Next</span>-->
+<!--                </a>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </nav>-->
+
     <div class="copyright">
         <p class="footer">&copy; 2016 Date Pricing Tables. All Rights Reserved | Design by <a
                 href="http://w3layouts.com/"> W3layouts</a></p>
     </div>
     <!-- End Flipster List -->
 </div>
-<script src="../static/js/jquery.flipster.js" th:src="@{/js/jquery.flipster.js}"></script>
-<script>
 
-    $(function () {
-        $(".flipster")
-            .flipster({
-                style: 'carousel', start: 0
-            });
-    });
-</script>
+<script src="../static/js/jquery.flipster.js" th:src="@{/js/jquery.flipster.js}"></script>
+
+<script src="../static/js/flip.js" th:src="@{/js/flip.js}"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<!-- Third party plugin JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<!-- Core theme JS-->
+<script th:src="@{/js/scripts.js}"></script>
 
 </body>
+
 </html>

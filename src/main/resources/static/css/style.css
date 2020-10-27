@@ -80,9 +80,7 @@ ul{
 /*-- //Reset-Code --*/
 
 body {
-    background: url(../images/b1.jpg);
-    background-repeat: no-repeat;
-    background-position: center;
+    background-image: url(../assets/img/searchs.png);
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -576,32 +574,40 @@ button[type=submit] {
     margin-top: 25px;
 }
 }
-@media(max-width:375px){
-	h1.header-w3ls {
-    font-size: 33px;
-}
-h2.doctor-list-w3l {
-    font-size: 28px;
-}
-select.form-control, .form-left-to-w3l input[type="text"], .input#datepicker1 {
-    padding: .6em .7em;
-}
-select.form-control {
-    height: 34px;
-}
-button[type=submit] {
-    width: 40%;
-}
-@media(max-width:320px){
-	h1.header-w3ls {
-    font-size: 29px;
-}
-h2.doctor-list-w3l {
-    font-size: 25px;
-}
-.copy {
-    padding: 18px 0px;
-}
+@media(max-width:375px) {
+    h1.header-w3ls {
+        font-size: 33px;
+    }
+
+    h2.doctor-list-w3l {
+        font-size: 28px;
+    }
+
+    select.form-control, .form-left-to-w3l input[type="text"], .input#datepicker1 {
+        padding: .6em .7em;
+    }
+
+    select.form-control {
+        height: 34px;
+    }
+
+    button[type=submit] {
+        width: 40%;
+    }
+
+    @media (max-width: 320px) {
+        h1.header-w3ls {
+            font-size: 29px;
+        }
+
+        h2.doctor-list-w3l {
+            font-size: 25px;
+        }
+
+        .copy {
+            padding: 18px 0px;
+        }
+    }
 }
 /*--//responsive--*/
 

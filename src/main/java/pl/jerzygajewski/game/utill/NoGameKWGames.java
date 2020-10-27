@@ -51,13 +51,14 @@ public class NoGameKWGames implements ScrapInterface {
 
     @Override
     public void startScrapingForAllConsoles() throws IOException {
+        List<Game> allScrapedGames = new ArrayList<>();
         for (int i = 0; i < MODEL.length; i++) {
 
             if (currentProxy >= ProxyEnum.values().length) {
-                startScrapping(MODEL[i]);
+                startScrapping(MODEL[i], allScrapedGames);
                 currentProxy = 0;
             }
-            startScrapping(MODEL[i]);
+            startScrapping(MODEL[i], allScrapedGames);
             currentProxy++;
             try {
                 TimeUnit.SECONDS.sleep(3);
@@ -71,17 +72,17 @@ public class NoGameKWGames implements ScrapInterface {
     }
 
     @Override
-    public void startScrapping(ConfigurationModel configurationModel) throws IOException {
+    public void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException {
         Document document = connectToSite(configurationModel);
         String number = getPageNumbers(document, configurationModel);
         if (number.equals(configurationModel.getFirstPageUrl())) {
             List<Game> games = scrapGames(document, configurationModel);
-            saveOrRemoveGames(games);
+            saveAndAddToList(games, allScrapedGames);
         } else {
             int lastSiteNumber = Integer.parseInt(number);
             for (int i = 1; i < lastSiteNumber; i++) {
                 List<Game> games = scrapGames(document, configurationModel);
-                saveOrRemoveGames(games);
+                saveAndAddToList(games, allScrapedGames);
                 try {
                     TimeUnit.SECONDS.sleep(10);
                 } catch (InterruptedException e) {
@@ -89,6 +90,9 @@ public class NoGameKWGames implements ScrapInterface {
                 }
             }
         }
+        removeGame(allScrapedGames);
+
+
     }
 
     @Override
@@ -195,12 +199,12 @@ public class NoGameKWGames implements ScrapInterface {
     }
 
     @Override
-    public void removeGame(List<Game> newList) {
+    public void removeGame(List<Game> allScrapedGames) {
         List<String> shopIdNewList = new ArrayList<>();
-        for (Game game : newList) {
+        for (Game game : allScrapedGames) {
             shopIdNewList.add(game.getGameShopId());
         }
-        List<Game> oldGameList = gameRepository.findAllGamesFromShop(newList.get(0).getShop().getName());
+        List<Game> oldGameList = gameRepository.findAllGamesFromShop(allScrapedGames.get(0).getShop().getName());
         List<String> shopIdOldGame = new ArrayList<>();
         for (Game game : oldGameList) {
             shopIdOldGame.add(game.getGameShopId());
@@ -216,7 +220,7 @@ public class NoGameKWGames implements ScrapInterface {
     }
 
     @Override
-    public void saveOrRemoveGames(List<Game> newList) {
+    public void saveAndAddToList(List<Game> newList, List<Game> allScrapedGames) {
         List<Game> gamesToSave = addOrUpdate(newList);
         for (Game games : gamesToSave) {
             gameRepository.save(games);

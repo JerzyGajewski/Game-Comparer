@@ -17,12 +17,7 @@ public class ShopController {
     }
 
     @GetMapping()
-    public String addShop(Model model) {
-
-        ShopInfo shopInfo = mainScrappingService.getShopDataToApp();
-
-        model.addAttribute("shop", shopInfo);
-
+    public String addShop() {
         return "startPage";
     }
 }

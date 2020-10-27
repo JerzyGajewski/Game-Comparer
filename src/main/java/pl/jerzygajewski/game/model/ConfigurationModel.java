@@ -19,7 +19,8 @@ public class ConfigurationModel {
     private String gameId;
 
     public ConfigurationModel(String console, String firstPageUrl, String gameListUrl, String titleSelector,
-                              String priceSelector, String imageSelector, String lastPageSelector, String notAvalable, String gameId) {
+                              String priceSelector, String imageSelector, String lastPageSelector,
+                              String notAvalable, String gameId) {
         this.console = console;
         this.firstPageUrl = firstPageUrl;
         this.gameListUrl = gameListUrl;

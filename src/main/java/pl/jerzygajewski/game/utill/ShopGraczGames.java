@@ -16,6 +16,8 @@ import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.interfaces.ScrapInterface;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,40 +60,39 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public void startScrapingForAllConsoles() throws IOException {
+        List<Game> allScrapedGames = new ArrayList<>();
         for (int i = 0; i < MODEL.length; i++) {
-
-            if (currentProxy == ProxyEnum.values().length) {
-                startScrapping(MODEL[i]);
-                currentProxy = 0;
-            }
-            startScrapping(MODEL[i]);
-            currentProxy++;
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-//            wait time!
-            // getconfig for enum
-            //startScrapping(config);
+            startScrapping(MODEL[i], allScrapedGames);
         }
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+//            wait time!
+        // getconfig for enum
+        //startScrapping(config);
+        removeGame(allScrapedGames);
+        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
+        shopInfo.setScrapDate(LocalDateTime.now());
+        shopRepository.save(shopInfo);
     }
 
     @Override
-    public void startScrapping(ConfigurationModel configurationModel) throws IOException {
+    public void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException {
         Document document = connectToSite(configurationModel);
         String number = getPageNumbers(document, configurationModel);
         if (number.equals(configurationModel.getFirstPageUrl())) {
             List<Game> games = scrapGames(document, configurationModel);
-            saveOrRemoveGames(games);
+            saveAndAddToList(games, allScrapedGames);
         } else {
             int lastSiteNumber = Integer.parseInt(number);
             for (int i = 1; i <= lastSiteNumber; i++) {
                 Document document1 = connectToSiteBySiteNumber(configurationModel, i);
                 List<Game> games = scrapGames(document1, configurationModel);
-                saveOrRemoveGames(games);
+                saveAndAddToList(games, allScrapedGames);
                 try {
-                    TimeUnit.SECONDS.sleep(10);
+                    TimeUnit.SECONDS.sleep(5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -103,22 +104,52 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
+        if (currentProxy >= ProxyEnum.values().length) {
+            currentProxy = 0;
+        } else {
+            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
+            currentProxy++;
+            Connection conn = Jsoup.connect(configurationModel.getFirstPageUrl());
+            Document document = conn.get();
+//            Proxy proxy = new Proxy(Proxy.Type.HTTP,
+//                    new InetSocketAddress("168.169.96.2", 8080));
+//            Document document = Jsoup //
+//                    .connect(configurationModel.getFirstPageUrl()) //
+//                    .proxy(proxy) // sets a HTTP proxy)
+//                    .userAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2") //
+//                    .header("Content-Language", "en-US") //
+//                    .get();
 
-        System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-        System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-        Connection conn = Jsoup.connect(configurationModel.getFirstPageUrl());
-        Document document = conn.get();
-
-        return document;
+            return document;
+        }
+        return null;
     }
 
     @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-        System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-        System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-        Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
-        Document document = conn.get();
-        return document;
+        if (currentProxy >= ProxyEnum.values().length) {
+            currentProxy = 0;
+        } else {
+            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
+            currentProxy++;
+            Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
+            Document document = conn.get();
+            return document;
+//            currentProxy++;
+//            Proxy proxy = new Proxy(Proxy.Type.HTTP,
+//                    new InetSocketAddress("168.169.96.2", 8080));
+//            Document document = Jsoup //
+//                    .connect(configurationModel.getFirstPageUrl()) //
+//                    .proxy(proxy) // sets a HTTP proxy)
+//                    .userAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2") //
+//                    .header("Content-Language", "en-US") //
+//                    .get();
+
+//            return document;
+        }
+        return null;
     }
 
     @Override
@@ -146,7 +177,7 @@ public class ShopGraczGames implements ScrapInterface {
 
         Element[] gameId = getGameId(document, configurationModel);
 
-        List<Game> titles = new ArrayList<>();
+        List<Game> newList = new ArrayList<>();
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
 
         for (int i = 0; i < priceElement.length; i++) {
@@ -164,10 +195,10 @@ public class ShopGraczGames implements ScrapInterface {
             gameTitle.setImg(pictureElement[i].attr("src"));
             gameTitle.setShop(shopInfo);
 
-            titles.add(gameTitle);
+            newList.add(gameTitle);
         }
 
-        return titles;
+        return newList;
     }
 
     private Element[] getGameId(Document document, ConfigurationModel configurationModel) {
@@ -229,35 +260,33 @@ public class ShopGraczGames implements ScrapInterface {
     }
 
     @Override
-    public void removeGame(List<Game> newList) {
-//        List<String> shopIdNewList = new ArrayList<>();
-//        for (Game game : newList) {
-//            shopIdNewList.add(game.getGameShopId());
-//        }
-//        List<Game> oldGameList = gameRepository.findAllGamesFromShop(newList.get(0).getShop().getName());
-//        List<String> shopIdOldGame = new ArrayList<>();
-//        for (Game game : oldGameList) {
-//            shopIdOldGame.add(game.getGameShopId());
-//        }
-//        shopIdOldGame.removeAll(shopIdNewList);
-//        if(shopIdOldGame.size() != 0) {
-//             czy nie wywali błędu
-//            for (int j = 0; j < shopIdOldGame.size(); j++) {
-//                Game gameToRemove = gameRepository.findGameByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
-//                oldGameList.remove(gameToRemove);
-//            }
-//        }
-    }
-
-    @Override
-    public void saveOrRemoveGames(List<Game> newList) {
+    public void saveAndAddToList(List<Game> newList, List<Game> allScrapedGames) {
         List<Game> gamesToSave = addOrUpdate(newList);
         for (Game games : gamesToSave) {
             gameRepository.save(games);
+            allScrapedGames.add(games);
         }
-//        removeGame(newList);
-        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
-        shopInfo.setScrapDate(LocalDateTime.now());
-        shopRepository.save(shopInfo);
     }
+
+    @Override
+    public void removeGame(List<Game> allScrappedGames) {
+        List<String> shopIdNewList = new ArrayList<>();
+        for (Game game : allScrappedGames) {
+            shopIdNewList.add(game.getGameShopId());
+        }
+        List<Game> oldGameList = gameRepository.findAllGamesFromShop(allScrappedGames.get(0).getShop().getName());
+        List<String> shopIdOldGame = new ArrayList<>();
+        for (Game game : oldGameList) {
+            shopIdOldGame.add(game.getGameShopId());
+        }
+        shopIdOldGame.removeAll(shopIdNewList);
+        if (shopIdOldGame.size() != 0) {
+//             czy nie wywali błędu
+            for (int j = 0; j < shopIdOldGame.size(); j++) {
+                Game gameToRemove = gameRepository.findGameByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
+                oldGameList.remove(gameToRemove);
+            }
+        }
+    }
+
 }

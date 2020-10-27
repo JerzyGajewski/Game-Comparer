@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
    <head>
@@ -26,14 +25,14 @@
       </h1>
       <div class="doctor-form">
          <h2 class="doctor-list-w3l">Search For Games</h2>
-         <form action="/result" method="post">
+         <form action="/result" method="get">
             <div class="main">
                <div class="form-left-to-w3l">
                   <input type="text" th:name="gameName" placeholder="Game name">
                   <div class="clear"></div>
                </div>
                <div class="form-right-to-w3l">
-                  <select class="form-control">
+                  <select class="form-control" >
                      <option value="">Select City</option>
                      <option>Kraków</option>
                   </select>
@@ -43,12 +42,12 @@
 
             <div class="main">
                   <div class="form-left-to-w3l gap-top">
-                  <select class="form-control" th:name="shopName" id="1" th:field="*{shops}" required>
+                  <select th:name="shop" class="form-control" id="1" required>
                      <option value="" selected>
                         Select Shop
                      </option>
                      <option  th:value="category0">All shops</option>
-                      <option th:name="${shop.name}" th:value="${shop.name}" th:each="shop : ${shops}" th:text="${shop.name}"></option>
+                      <option th:value="${shop.name}" th:each="shop : ${shops}" th:text="${shop.name}"></option>
                   </select>
                   <div class="clear"></div>
                </div>
@@ -58,7 +57,7 @@
                      <div class="w3-agile1" >
                         <label class="rating">Select Console</label>
 
-                              <input type="radio" id="a-option" th:name="console" th:value="Ps4">
+                              <input type="radio" id="a-option" th:name="console" th:value="Ps4" required>
                               <label for="a-option">Ps4</label>
 
 

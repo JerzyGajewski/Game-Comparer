@@ -14,13 +14,13 @@ import javax.persistence.*;
 public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String title;
-    String price;
-    String img;
-    String avalable;
-    String gameShopId;
+    private String title;
+    private String price;
+    private String img;
+    private String avalable;
+    private String gameShopId;
 
     String consoleType;
 

@@ -11,7 +11,7 @@ public interface ScrapInterface {
 
     void startScrapingForAllConsoles() throws IOException;
 
-    void startScrapping(ConfigurationModel configurationModel) throws IOException;
+    void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException;
 
     Document connectToSite(ConfigurationModel configurationModel) throws IOException;
 
@@ -23,9 +23,9 @@ public interface ScrapInterface {
 
     List<Game> addOrUpdate(List<Game> game);
 
-    void removeGame(List<Game> games);
+    void saveAndAddToList(List<Game> games, List<Game> allScrapedGames);
 
-    void saveOrRemoveGames(List<Game> games);
+    void removeGame(List<Game> allScrapedGames);
 
 
 }

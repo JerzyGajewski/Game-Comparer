@@ -17,9 +17,13 @@ import java.util.List;
 public class ShopInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String name;
-    LocalDateTime scrapDate;
+    private Long id;
+    private String name;
+    private String address;
+    private String workingHours;
+    private String email;
+    private String phone;
+    private LocalDateTime scrapDate;
 
 @OneToMany(mappedBy = "shop")
     private List<Game> Game = new ArrayList<>();

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Free Contact Form :: W3layouts</title>
+  <link rel="stylesheet" href="../static/css/shopDetailsStyle.css" th:href="@{/css/shopDetailsStyle.css}">
+
+
+  <!-- Font Awesome icons (free version)-->
+  <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+  <!-- Google fonts-->
+  <link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link th:href="@{/css/styles.css}" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+  <div class="container">
+    <a class="navbar-brand js-scroll-trigger" href="#page-top">Go up</a>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="/result">Back to searcher</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+
+
+  <!-- contacts -->
+  <section class="w3l-contacts-8">
+    <div class="contacts-9 section-gap">
+      <div class="wrapper">
+        <h3 class="global-title text-center">Contact Us</h3>
+        <div class="top-map">
+          <div class="partners">
+            <div class="cont-details">
+              <h5>Get in touch</h5>
+              <p>We're ready to lead you into the future with Business Services</p>
+              <p class="margin-top"><a></a></p>
+              <p>  <a></a></p>
+              <h6 class="margin-top"> 433 California St, Suite 300
+                San Francisco, CA 94104, USA </h6>
+            </div>
+            <div class="hours">
+              <h5>Working Hours</h5>
+              <h6>Business Service:</h6>
+              <p> Monday to Friday 8.00 am - 6.00 pm</p>
+              <p> Saturday and Sunday - Closed</p>
+              <h6 class="margin-top">Customer support:</h6>
+              <p> Monday to Friday 8.00 am - 6.00 pm</p>
+              <p> Saturday 10.00 am - 4.00 pm</p>
+              <p> Sunday - Closed</p>
+            </div>
+          </div>
+          <div class="map">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2562.2127594934313!2d19.95047781568285!3d50.04484557942138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47165b442e8bbc6f%3A0xbc6417b1f2f072fc!2sShop%20Gracz!5e0!3m2!1sen!2spl!4v1603793169205!5m2!1sen!2spl" width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="map-content-9 form-bg-img">
+      <div class="layer section-gap">
+        <div class="wrapper">
+          <div class="form">
+            <h5 class="text-center">Fill out the form.</h5>
+            <form action="https://sendmail.w3layouts.com/submitForm" method="post">
+              <div class="input-grids">
+                <input type="text" name="w3lName" id="w3lName" placeholder="Name">
+                <input type="email" name="w3lSender" id="w3lSender" placeholder="Email" required="" />
+                <input type="subject" name="w3lSubject" id="w3lSubject" placeholder="Subject" required="">
+              </div>
+              <div class="input-textarea">
+                <textarea name="w3lMessage" id="w3lMessage" placeholder="Message" required=""></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- //contacts -->
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>
+<!-- Third party plugin JS-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+<!-- Core theme JS-->
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+
+
+</html>

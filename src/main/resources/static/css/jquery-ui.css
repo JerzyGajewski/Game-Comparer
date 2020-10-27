@@ -106,14 +106,14 @@ padding: 0 0em 0;
 	left: 10px;
     width: 14px;
     height: 20px;
-    background: url(../images/cal1.png) no-repeat -2px -0px;
+    background: url(../assets/img/cal1.png) no-repeat -2px -0px;
     cursor: pointer;
 }
 .ui-datepicker .ui-datepicker-next {
 	right: 10px;
     width: 14px;
     height: 20px;
-    background: url(../images/cal.png) no-repeat -2px -0px;
+    background: url(../assets/img/cal.png) no-repeat -2px -0px;
     cursor: pointer;
  }
 .ui-datepicker .ui-datepicker-prev span, .ui-datepicker .ui-datepicker-next span { display: block; position: absolute; left: 50%; margin-left: -8px; top: 50%; margin-top: -8px;  }

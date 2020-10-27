@@ -8,7 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import pl.jerzygajewski.game.entity.Game;
 import pl.jerzygajewski.game.entity.ShopInfo;
 import pl.jerzygajewski.game.repository.GameRepository;
@@ -17,8 +17,6 @@ import pl.jerzygajewski.game.service.MainScrappingServiceImpl;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 public class GameController {
@@ -36,27 +34,43 @@ public class GameController {
         this.gameRepository = gameRepository;
     }
 
-    @GetMapping("/start")
-    public String saveGamesToDb(Model model) {
+
+    @GetMapping("/scrap")
+    @ResponseBody
+    public String scrap() {
+        mainScrappingService.getShopDataToApp();
+
         try {
-            try {
-             mainScrappingService.getServiceToScrap();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-         catch (IOException e) {
+            mainScrappingService.getServiceToScrap();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        return "scraping";
+    }
+
+
+    @GetMapping("/start")
+    public String saveGamesToDb() {
+
         return "search";
     }
+
     @ModelAttribute("shops")
-    public List<ShopInfo> shopList(){return shopRepository.findAll();}
+    public List<ShopInfo> shopList() {
+        return shopRepository.findAll();
+    }
 
-    @PostMapping("/result")
-    public String getResults(Model model, @Param("gameName") String gameName, @Param("console") String console){
+    // jak dodam shop dostaje null
+    @GetMapping("/result")
+    public String getResults(Model model,
+                             @Param("gameName") String gameName,
+                             @Param("console") String console,
+                             @Param("shop") String shop) {
 
-        List<Game> gameList = gameRepository.searchGames(gameName, console);
+        List<Game> gameList = gameRepository.searchGames(gameName, console, shop);
+        if (gameList.size() <= 0) {
+            return "notFound";
+        }
 //        List<Game> filteredList =
 //        gameList.stream()
 //                .filter(game -> request.get("gameName").toLowerCase().trim().contains(game.getTitle()))
@@ -66,6 +80,14 @@ public class GameController {
 
         model.addAttribute("games", gameList);
         return "specyficResults";
+    }
+
+    // shopName dostaje null
+    @GetMapping("/shopDetails")
+    public String details(Model model, @Param("shopName") String shopName) {
+        ShopInfo shop = shopRepository.findOneByName(shopName);
+        model.addAttribute("shopName", shop);
+        return "shopDetails";
     }
 
 }
