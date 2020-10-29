@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pl.jerzygajewski.game.entity.Game;
 import pl.jerzygajewski.game.entity.ShopInfo;
@@ -15,7 +14,7 @@ import pl.jerzygajewski.game.repository.GameRepository;
 import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.MainScrappingServiceImpl;
 
-import java.io.IOException;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -50,8 +49,9 @@ public class GameController {
 
 
     @GetMapping("/start")
-    public String saveGamesToDb() {
-
+    public String saveGamesToDb(HttpSession session) {
+        session.invalidate();
+        //czyszczenie sesji
         return "search";
     }
 
@@ -65,18 +65,22 @@ public class GameController {
     public String getResults(Model model,
                              @Param("gameName") String gameName,
                              @Param("console") String console,
-                             @Param("shop") String shop) {
+                             @Param("shop") String shop,
+                             HttpSession session
+                         ) {
 
-        List<Game> gameList = gameRepository.searchGames(gameName, console, shop);
-        if (gameList.size() <= 0) {
+        List<Game> gameList = null;
+
+        if (session.getAttribute("result") != null) {
+            gameList = (List<Game>) session.getAttribute("result");
+        } else {
+            gameList = gameRepository.searchGames(gameName, console, shop);
+            session.setAttribute("result", gameList);
+        }
+
+        if (gameList.isEmpty()) {
             return "notFound";
         }
-//        List<Game> filteredList =
-//        gameList.stream()
-//                .filter(game -> request.get("gameName").toLowerCase().trim().contains(game.getTitle()))
-////                .filter(game -> request.get("shopName").toLowerCase().trim().equals(game.getShop().getName()))
-////                .filter(game -> request.get("selector1").toLowerCase().trim().equals(game.getConsoleType()))
-//                .collect(Collectors.toList());
 
         model.addAttribute("games", gameList);
         return "specyficResults";
@@ -86,7 +90,9 @@ public class GameController {
     @GetMapping("/shopDetails")
     public String details(Model model, @Param("shopName") String shopName) {
         ShopInfo shop = shopRepository.findOneByName(shopName);
-        model.addAttribute("shopName", shop);
+        model.addAttribute("shopInfo", shop);
+
+
         return "shopDetails";
     }
 

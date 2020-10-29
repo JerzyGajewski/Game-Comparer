@@ -1,6 +1,5 @@
 package pl.jerzygajewski.game.utill;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,7 +7,6 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 import pl.jerzygajewski.game.entity.Game;
 import pl.jerzygajewski.game.entity.ShopInfo;
-import pl.jerzygajewski.game.enums.ProxyEnum;
 import pl.jerzygajewski.game.enums.ShopEnum;
 import pl.jerzygajewski.game.model.ConfigurationModel;
 import pl.jerzygajewski.game.repository.GameRepository;
@@ -16,11 +14,10 @@ import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.interfaces.ScrapInterface;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -48,7 +45,6 @@ public class ShopGraczGames implements ScrapInterface {
                     ".js-product-miniature")
     };
 
-    int currentProxy = 0;
     private ShopRepository shopRepository;
     private GameRepository gameRepository;
 
@@ -80,19 +76,27 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException {
+        Random random = new Random();
+        int rand = random.nextInt(15)+1;
         Document document = connectToSite(configurationModel);
         String number = getPageNumbers(document, configurationModel);
         if (number.equals(configurationModel.getFirstPageUrl())) {
             List<Game> games = scrapGames(document, configurationModel);
             saveAndAddToList(games, allScrapedGames);
+            try {
+                TimeUnit.SECONDS.sleep(rand);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             int lastSiteNumber = Integer.parseInt(number);
             for (int i = 1; i <= lastSiteNumber; i++) {
+                rand = random.nextInt(15)+1;
                 Document document1 = connectToSiteBySiteNumber(configurationModel, i);
                 List<Game> games = scrapGames(document1, configurationModel);
                 saveAndAddToList(games, allScrapedGames);
                 try {
-                    TimeUnit.SECONDS.sleep(5);
+                    TimeUnit.SECONDS.sleep(rand);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -104,53 +108,36 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
-        if (currentProxy >= ProxyEnum.values().length) {
-            currentProxy = 0;
-        } else {
-            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-            currentProxy++;
-            Connection conn = Jsoup.connect(configurationModel.getFirstPageUrl());
-            Document document = conn.get();
-//            Proxy proxy = new Proxy(Proxy.Type.HTTP,
-//                    new InetSocketAddress("168.169.96.2", 8080));
-//            Document document = Jsoup //
-//                    .connect(configurationModel.getFirstPageUrl()) //
-//                    .proxy(proxy) // sets a HTTP proxy)
-//                    .userAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2") //
-//                    .header("Content-Language", "en-US") //
-//                    .get();
 
-            return document;
-        }
-        return null;
+//                //do zmiany
+////            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+////            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
+////            currentProxy++;
+////            Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
+////            Document document = conn.get();
+////            return document;
+////            currentProxy++;
+
+                Document document = Jsoup.connect(configurationModel.getFirstPageUrl()).get();
+                return document;
     }
+
 
     @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-        if (currentProxy >= ProxyEnum.values().length) {
-            currentProxy = 0;
-        } else {
-            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-            currentProxy++;
-            Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
-            Document document = conn.get();
-            return document;
+                //do zmiany
+//            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
+//            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
 //            currentProxy++;
-//            Proxy proxy = new Proxy(Proxy.Type.HTTP,
-//                    new InetSocketAddress("168.169.96.2", 8080));
-//            Document document = Jsoup //
-//                    .connect(configurationModel.getFirstPageUrl()) //
-//                    .proxy(proxy) // sets a HTTP proxy)
-//                    .userAgent("Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2") //
-//                    .header("Content-Language", "en-US") //
-//                    .get();
-
+//            Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
+//            Document document = conn.get();
 //            return document;
-        }
-        return null;
+//            currentProxy++;
+                Document document = Jsoup.connect(configurationModel.getGameListUrl() + i).get();
+                return document;
     }
+
+
 
     @Override
     public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {

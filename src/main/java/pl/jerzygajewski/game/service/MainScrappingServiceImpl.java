@@ -75,6 +75,8 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         List<ShopInfo> shop = shopRepository.findFirstByOrderByScrapDateAsc();
         ExecutorService executorService = Executors.newFixedThreadPool(5);
         for (int i = 0; i < shop.size(); i++) {
+            synchronized (executorService) {
+
             executorService.submit(() -> {
 ////            porownanie z gra, jeśli dane są takie same to shop update date
 ////            jesli rozne to update game and shop date
@@ -85,6 +87,7 @@ public class MainScrappingServiceImpl implements MainScrappingService {
                     e.printStackTrace();
                 }
             });
+            }
             TimeUnit.SECONDS.sleep(10);
         }
         long end = System.currentTimeMillis();
