@@ -65,9 +65,7 @@ public class ShopGraczGames implements ScrapInterface {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-//            wait time!
-        // getconfig for enum
-        //startScrapping(config);
+
         removeGame(allScrapedGames);
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.SHOPGRACZ.getName());
         shopInfo.setScrapDate(LocalDateTime.now());

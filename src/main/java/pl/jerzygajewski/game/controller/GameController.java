@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import pl.jerzygajewski.game.entity.Game;
 import pl.jerzygajewski.game.entity.ShopInfo;
@@ -67,29 +68,32 @@ public class GameController {
                              @Param("console") String console,
                              @Param("shop") String shop,
                              HttpSession session
-                         ) {
+    ) {
+        List<Game> gameList;
 
-        List<Game> gameList = null;
-
-        if (session.getAttribute("result") != null) {
-            gameList = (List<Game>) session.getAttribute("result");
-        } else {
-            gameList = gameRepository.searchGames(gameName, console, shop);
-            session.setAttribute("result", gameList);
-        }
+            if (session.getAttribute("result") != null) {
+                gameList = (List<Game>) session.getAttribute("result");
+            } else {
+                if(shop.equals("all")){
+                 gameList = gameRepository.findAll(gameName, console);
+                } else {
+                    gameList = gameRepository.searchGames(gameName, console, shop);
+                }
+                session.setAttribute("result", gameList);
+            }
 
         if (gameList.isEmpty()) {
             return "notFound";
         }
-
         model.addAttribute("games", gameList);
         return "specyficResults";
+
     }
 
     // shopName dostaje null
-    @GetMapping("/shopDetails")
-    public String details(Model model, @Param("shopName") String shopName) {
-        ShopInfo shop = shopRepository.findOneByName(shopName);
+    @PostMapping("/shopDetails")
+    public String details(Model model, @Param("sss") String sss) {
+        ShopInfo shop = shopRepository.findOneByName(sss);
         model.addAttribute("shopInfo", shop);
 
 

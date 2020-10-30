@@ -22,12 +22,12 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Service
-public class NoGameKWGames implements ScrapInterface {
+public class NoGameNHGames implements ScrapInterface {
     static ConfigurationModel[] MODEL = {
             new ConfigurationModel(
                     "ps4",
-                    "https://www.nogame.pl/pl/c/PlayStation-4/140",
-                    "https://www.nogame.pl/pl/c/PlayStation-4/140/",
+                    "https://www.nogame.pl/pl/c/PlayStation-4/187",
+                    "https://www.nogame.pl/pl/c/PlayStation-4/187/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
                     ".products.viewphot .product .prodimage .img-wrap img",
@@ -36,8 +36,8 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "ps3",
-                    "https://www.nogame.pl/pl/c/PlayStation-3/60",
-                    "https://www.nogame.pl/pl/c/PlayStation-3/60/",
+                    "https://www.nogame.pl/pl/c/PlayStation-3/186",
+                    "https://www.nogame.pl/pl/c/PlayStation-3/186/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
                     ".products.viewphot .product .prodimage .img-wrap img",
@@ -46,8 +46,8 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "xbox360",
-                    "https://www.nogame.pl/pl/c/Xbox-360/59",
-                    "https://www.nogame.pl/pl/c/Xbox-360/59/",
+                    "https://www.nogame.pl/pl/c/XBOX-360/188",
+                    "https://www.nogame.pl/pl/c/XBOX-360/188/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
                     ".products.viewphot .product .prodimage .img-wrap img",
@@ -56,8 +56,8 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "xboxOne",
-                    "https://www.nogame.pl/pl/c/XBOX-ONE/162",
-                    "https://www.nogame.pl/pl/c/XBOX-ONE/162/",
+                    "https://www.nogame.pl/pl/c/XBOX-ONE/184",
+                    "https://www.nogame.pl/pl/c/XBOX-ONE/184/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
                     ".products.viewphot .product .prodimage .img-wrap img",
@@ -66,8 +66,8 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "switch",
-                    "https://www.nogame.pl/pl/c/Nintendo-Switch/221",
-                    "https://www.nogame.pl/pl/c/Nintendo-Switch/221/",
+                    "https://www.nogame.pl/pl/c/Nintendo-Switch/244",
+                    "https://www.nogame.pl/pl/c/Nintendo-Switch/244/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
                     ".products.viewphot .product .prodimage .img-wrap img",
@@ -81,7 +81,7 @@ public class NoGameKWGames implements ScrapInterface {
     private GameRepository gameRepository;
 
     @Autowired
-    public NoGameKWGames(ShopRepository shopRepository, GameRepository gameRepository) {
+    public NoGameNHGames(ShopRepository shopRepository, GameRepository gameRepository) {
         this.shopRepository = shopRepository;
         this.gameRepository = gameRepository;
     }
@@ -99,7 +99,7 @@ public class NoGameKWGames implements ScrapInterface {
         }
 
         removeGame(allScrapedGames);
-        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.NOGAMEKW.getName());
+        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.NOGAMENH.getName());
         shopInfo.setScrapDate(LocalDateTime.now());
         shopRepository.save(shopInfo);
     }
@@ -172,7 +172,7 @@ public class NoGameKWGames implements ScrapInterface {
         Elements avalable = document.select(configurationModel.getNotAvalable());
 
         List<Game> titles = new ArrayList<>();
-        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.NOGAMEKW.getName());
+        ShopInfo shopInfo = shopRepository.findByName(ShopEnum.NOGAMENH.getName());
 
         for (int i = 0; i < priceElement.length; i++) {
 
@@ -281,5 +281,4 @@ public class NoGameKWGames implements ScrapInterface {
             }
         }
     }
-
 }

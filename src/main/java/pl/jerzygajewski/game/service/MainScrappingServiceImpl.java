@@ -6,7 +6,9 @@ import pl.jerzygajewski.game.entity.ShopInfo;
 import pl.jerzygajewski.game.enums.ShopEnum;
 import pl.jerzygajewski.game.repository.ShopRepository;
 import pl.jerzygajewski.game.service.interfaces.MainScrappingService;
+import pl.jerzygajewski.game.utill.GameOverGames;
 import pl.jerzygajewski.game.utill.NoGameKWGames;
+import pl.jerzygajewski.game.utill.NoGameNHGames;
 import pl.jerzygajewski.game.utill.ShopGraczGames;
 
 import java.io.IOException;
@@ -20,13 +22,17 @@ public class MainScrappingServiceImpl implements MainScrappingService {
     ShopRepository shopRepository;
     ShopGraczGames shopGraczGames;
     NoGameKWGames noGameKWGames;
+    GameOverGames  gameOverGames;
+    NoGameNHGames noGameNHGames;
 
 
     public MainScrappingServiceImpl(ShopRepository shopRepository, ShopGraczGames shopGraczGames,
-                                    NoGameKWGames noGameKWGames) {
+                                    NoGameKWGames noGameKWGames, GameOverGames gameOverGames, NoGameNHGames noGameNHGames) {
         this.shopRepository = shopRepository;
         this.shopGraczGames = shopGraczGames;
         this.noGameKWGames = noGameKWGames;
+        this.gameOverGames = gameOverGames;
+        this.noGameNHGames = noGameNHGames;
     }
 
     //  jeden watek - 67636
@@ -35,7 +41,7 @@ public class MainScrappingServiceImpl implements MainScrappingService {
 //     10 watkow  10?
 //    jeden watek  --- wg czasu 47.5
 //    Pytanie odnosnie autoupdate?
-//    @Scheduled
+    @Scheduled(cron = "0 10 10 * * *")
     @Override
     public void getShopDataToApp() {
         if (shopRepository.findAll().isEmpty()) {
@@ -58,6 +64,7 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         shopInfo.setEmail(ShopEnum.values()[i].getEmail());
         shopInfo.setAddress(ShopEnum.values()[i].getAddress());
         shopInfo.setWorkingHours(ShopEnum.values()[i].getWorkingHours());
+        shopInfo.setMap(ShopEnum.values()[i].getMapLink());
         shopRepository.save(shopInfo);
     }
 
@@ -78,11 +85,11 @@ public class MainScrappingServiceImpl implements MainScrappingService {
             synchronized (executorService) {
 
             executorService.submit(() -> {
-////            porownanie z gra, jeśli dane są takie same to shop update date
-////            jesli rozne to update game and shop date
-//            noGameKWGames.startScrapingForAllConsoles();
                 try {
                     shopGraczGames.startScrapingForAllConsoles();
+                    noGameNHGames.startScrapingForAllConsoles();
+                    gameOverGames.startScrapingForAllConsoles();
+                    noGameKWGames.startScrapingForAllConsoles();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -47,7 +47,7 @@
                      <option value="" selected>
                         Select Shop
                      </option>
-                     <option  th:value="category0">All shops</option>
+                     <option  th:value="all">All shops</option>
                       <option th:value="${shop.name}" th:each="shop : ${shops}" th:text="${shop.name}"></option>
                   </select>
                   <div class="clear"></div>

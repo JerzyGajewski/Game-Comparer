@@ -19,14 +19,16 @@ public class ShopInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private LocalDateTime scrapDate;
     private String address;
     private String workingHours;
     private String email;
     private String phone;
-    private LocalDateTime scrapDate;
+    private String map;
 
 @OneToMany(mappedBy = "shop")
     private List<Game> Game = new ArrayList<>();
+
 
 
 }
