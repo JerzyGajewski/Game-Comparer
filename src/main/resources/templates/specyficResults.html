@@ -46,7 +46,7 @@
 
 
 <div class="content" id="Main-Content">
-    <h1>Data Pricing Tables</h1>
+    <h1>Searching Results</h1>
     <!-- Flipster List -->
     <div class="flipster">
         <ul>
@@ -58,7 +58,7 @@
                         <h5 th:text="${game.shop.name}"></h5>
                         <form action="/shopDetails" method="post">
                         <div class="buy-button">
-                            <button type="submit"  name="sss" th:value="${game.shop.name}" th:text="${game.shop.name}"></button>
+                            <button type="submit"  name="shopName" th:value="${game.shop.name}" th:text="${game.shop.name}"></button>
                         </div>
                         </form>
                     </div>

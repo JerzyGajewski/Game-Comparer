@@ -24,6 +24,7 @@ public class ShopInfo {
     private String workingHours;
     private String email;
     private String phone;
+    @Column(length = 300)
     private String map;
 
 @OneToMany(mappedBy = "shop")

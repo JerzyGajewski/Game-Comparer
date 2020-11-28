@@ -39,6 +39,7 @@ public class GameController {
     @ResponseBody
     public String scrap() {
         mainScrappingService.getShopDataToApp();
+        mainScrappingService.editShopData();
 
         try {
             mainScrappingService.getServiceToScrap();
@@ -92,8 +93,8 @@ public class GameController {
 
     // shopName dostaje null
     @PostMapping("/shopDetails")
-    public String details(Model model, @Param("sss") String sss) {
-        ShopInfo shop = shopRepository.findOneByName(sss);
+    public String details(Model model, @Param("shopName") String shopName) {
+        ShopInfo shop = shopRepository.findOneByName(shopName);
         model.addAttribute("shopInfo", shop);
 
 

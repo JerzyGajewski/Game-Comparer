@@ -35,12 +35,7 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         this.noGameNHGames = noGameNHGames;
     }
 
-    //  jeden watek - 67636
-//    dwa watki - 56.2
-//    10 watkow 56.4
-//     10 watkow  10?
-//    jeden watek  --- wg czasu 47.5
-//    Pytanie odnosnie autoupdate?
+
     @Scheduled(cron = "0 10 10 * * *")
     @Override
     public void getShopDataToApp() {
@@ -58,6 +53,16 @@ public class MainScrappingServiceImpl implements MainScrappingService {
             }
     }
 
+    @Override
+    public void editShopData() {
+        List<ShopInfo> shopInfoList = shopRepository.findAll();
+            for (ShopInfo shopInfo : shopInfoList) {
+        for (int i = 0; i < ShopEnum.values().length; i++) {
+                shopDetails(i, shopInfo);
+            }
+        }
+    }
+
     private void shopDetails(int i, ShopInfo shopInfo) {
         shopInfo.setName(ShopEnum.values()[i].getName());
         shopInfo.setPhone(ShopEnum.values()[i].getPhone());
@@ -68,10 +73,7 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         shopRepository.save(shopInfo);
     }
 
-    // zabezpieczenie przed odświeżeniem strony!!!
-//    scheduled jak dokładnie działa
-//    dodanie wątków!
-    //    Factory Design Pattern
+//    Factory Design Pattern
     @Scheduled(cron = "0 20 10 * * *")
     @Override
     public void getServiceToScrap() throws InterruptedException {
@@ -84,16 +86,16 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         for (int i = 0; i < shop.size(); i++) {
             synchronized (executorService) {
 
-            executorService.submit(() -> {
-                try {
-                    shopGraczGames.startScrapingForAllConsoles();
-                    noGameNHGames.startScrapingForAllConsoles();
-                    gameOverGames.startScrapingForAllConsoles();
-                    noGameKWGames.startScrapingForAllConsoles();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+//            executorService.submit(() -> {
+//                try {
+//                    shopGraczGames.startScrapingForAllConsoles();
+//                    noGameNHGames.startScrapingForAllConsoles();
+//                    gameOverGames.startScrapingForAllConsoles();
+//                    noGameKWGames.startScrapingForAllConsoles();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            });
             }
             TimeUnit.SECONDS.sleep(10);
         }
