@@ -130,7 +130,6 @@ public class NoGameNHGames implements ScrapInterface {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//        wait time!
             }
         }
     }
@@ -274,7 +273,6 @@ public class NoGameNHGames implements ScrapInterface {
         }
         shopIdOldGame.removeAll(shopIdNewList);
         if (shopIdOldGame.size() != 0) {
-            // czy nie wywali błędu
             for (int j = 0; j < shopIdOldGame.size(); j++) {
                 Game gameToRemove = gameRepository.findGameByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
                 oldGameList.remove(gameToRemove);

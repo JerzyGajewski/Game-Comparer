@@ -62,7 +62,6 @@ public class GameController {
         return shopRepository.findAll();
     }
 
-    // jak dodam shop dostaje null
     @GetMapping("/result")
     public String getResults(Model model,
                              @Param("gameName") String gameName,
@@ -91,7 +90,6 @@ public class GameController {
 
     }
 
-    // shopName dostaje null
     @PostMapping("/shopDetails")
     public String details(Model model, @Param("shopName") String shopName) {
         ShopInfo shop = shopRepository.findOneByName(shopName);

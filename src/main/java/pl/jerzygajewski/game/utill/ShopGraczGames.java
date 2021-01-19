@@ -98,7 +98,6 @@ public class ShopGraczGames implements ScrapInterface {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-//        wait time!
             }
         }
     }
@@ -107,15 +106,6 @@ public class ShopGraczGames implements ScrapInterface {
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
 
-//                //do zmiany
-////            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-////            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-////            currentProxy++;
-////            Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
-////            Document document = conn.get();
-////            return document;
-////            currentProxy++;
-
                 Document document = Jsoup.connect(configurationModel.getFirstPageUrl()).get();
                 return document;
     }
@@ -123,14 +113,6 @@ public class ShopGraczGames implements ScrapInterface {
 
     @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-                //do zmiany
-//            System.setProperty("http.proxyHost", ProxyEnum.values()[currentProxy].getIp());
-//            System.setProperty("http.proxyPort", ProxyEnum.values()[currentProxy].getPort());
-//            currentProxy++;
-//            Connection conn = Jsoup.connect(configurationModel.getGameListUrl() + i);
-//            Document document = conn.get();
-//            return document;
-//            currentProxy++;
                 Document document = Jsoup.connect(configurationModel.getGameListUrl() + i).get();
                 return document;
     }
@@ -221,7 +203,6 @@ public class ShopGraczGames implements ScrapInterface {
         return priceElement;
     }
 
-    //błędy!
     @Override
     public List<Game> addOrUpdate(List<Game> newList) {
         List<Game> gameList = new ArrayList<>();
@@ -266,7 +247,6 @@ public class ShopGraczGames implements ScrapInterface {
         }
         shopIdOldGame.removeAll(shopIdNewList);
         if (shopIdOldGame.size() != 0) {
-//             czy nie wywali błędu
             for (int j = 0; j < shopIdOldGame.size(); j++) {
                 Game gameToRemove = gameRepository.findGameByGameShopId(shopIdOldGame.get(j), oldGameList.get(j).getShop().getName());
                 oldGameList.remove(gameToRemove);

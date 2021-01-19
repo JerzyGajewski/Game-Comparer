@@ -79,23 +79,22 @@ public class MainScrappingServiceImpl implements MainScrappingService {
     public void getServiceToScrap() throws InterruptedException {
         System.out.println("scraping");
         long start = System.currentTimeMillis();
-//        Get Data from db = which  shop game name
 
         List<ShopInfo> shop = shopRepository.findFirstByOrderByScrapDateAsc();
         ExecutorService executorService = Executors.newFixedThreadPool(5);
         for (int i = 0; i < shop.size(); i++) {
             synchronized (executorService) {
 
-//            executorService.submit(() -> {
-//                try {
-//                    shopGraczGames.startScrapingForAllConsoles();
-//                    noGameNHGames.startScrapingForAllConsoles();
-//                    gameOverGames.startScrapingForAllConsoles();
-//                    noGameKWGames.startScrapingForAllConsoles();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            });
+            executorService.submit(() -> {
+                try {
+                    shopGraczGames.startScrapingForAllConsoles();
+                    noGameNHGames.startScrapingForAllConsoles();
+                    gameOverGames.startScrapingForAllConsoles();
+                    noGameKWGames.startScrapingForAllConsoles();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
             }
             TimeUnit.SECONDS.sleep(10);
         }
