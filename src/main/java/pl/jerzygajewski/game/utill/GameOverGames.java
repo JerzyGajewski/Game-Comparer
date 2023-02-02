@@ -24,62 +24,57 @@ import java.util.concurrent.TimeUnit;
 public class GameOverGames implements ScrapInterface {
     static ConfigurationModel[] MODEL = {new ConfigurationModel(
             "ps4",
-            "https://www.krakow.gameover.pl/sklep/index.php?k68,playstation-4-gry",
             "https://www.krakow.gameover.pl/sklep/index.php?k68,playstation-4-gry,",
-            "t4",
-            "span[id]",
-            "t4",
-            ".pogrubienie",
+            "product__name",
+            "product__price",
+            "product__thumb",
+            "pagination-box",
             ".kom",
             "input[name]"
     ),
             new ConfigurationModel(
                     "ps3",
-                    "https://www.krakow.gameover.pl/sklep/index.php?k3,playstation-3-gry",
                     "https://www.krakow.gameover.pl/sklep/index.php?k3,playstation-3-gry,",
-                    "t4",
-                    "span[id]",
-                    "t4",
-                    ".pogrubienie",
+                    "product__name",
+                    "product__price",
+                    "product__thumb",
+                    "pagination-box",
                     ".kom",
                     "input[name]"
             ),
             new ConfigurationModel(
                     "xbox360",
-                    "https://www.krakow.gameover.pl/sklep/index.php?k5,xbox-360-gry",
                     "https://www.krakow.gameover.pl/sklep/index.php?k5,xbox-360-gry,",
-                    "t4",
-                    "span[id]",
-                    "t4",
-                    ".pogrubienie",
+                    "product__name",
+                    "product__price",
+                    "product__thumb",
+                    "pagination-box",
                     ".kom",
                     "input[name]"
             ),
             new ConfigurationModel(
                     "xboxOne",
-                    "https://www.krakow.gameover.pl/sklep/index.php?k102,xbox-one-gry",
                     "https://www.krakow.gameover.pl/sklep/index.php?k102,xbox-one-gry,",
-                    "t4",
-                    "span[id]",
-                    "t4",
-                    ".pogrubienie",
+                    "product__name",
+                    "product__price",
+                    "product__thumb",
+                    "pagination-box",
                     ".kom",
                     "input[name]"
             ),
             new ConfigurationModel(
                     "switch",
-                    "https://www.krakow.gameover.pl/sklep/index.php?k84,nintendo-switch-gry",
                     "https://www.krakow.gameover.pl/sklep/index.php?k84,nintendo-switch-gry,",
-                    "t4",
-                    "span[id]",
-                    "t4",
-                    ".pogrubienie",
+                    "product__name",
+                    "product__price",
+                    "product__thumb",
+                    "pagination-box",
                     ".kom",
                     "input[name]"
             )};
 
-    private ShopRepository shopRepository;
-    private GameRepository gameRepository;
+    private final ShopRepository shopRepository;
+    private final GameRepository gameRepository;
 
 
     public GameOverGames(ShopRepository shopRepository, GameRepository gameRepository) {
@@ -111,47 +106,38 @@ public class GameOverGames implements ScrapInterface {
         int rand = random.nextInt(15) + 1;
         Document document = connectToSite(configurationModel);
         String number = getPageNumbers(document, configurationModel);
-        if (number.equals(configurationModel.getFirstPageUrl())) {
-            List<Game> games = scrapGames(document, configurationModel);
+        int lastSiteNumber = Integer.parseInt(number);
+        for (int i = 1; i <= lastSiteNumber; i++) {
+            rand = random.nextInt(15) + 1;
+            Document document1 = connectToSiteBySiteNumber(configurationModel, i);
+            List<Game> games = scrapGames(document1, configurationModel);
             saveAndAddToList(games, allScrapedGames);
             try {
                 TimeUnit.SECONDS.sleep(rand);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        } else {
-            int lastSiteNumber = Integer.parseInt(number);
-            for (int i = 1; i <= lastSiteNumber; i++) {
-                rand = random.nextInt(15) + 1;
-                Document document1 = connectToSiteBySiteNumber(configurationModel, i);
-                List<Game> games = scrapGames(document1, configurationModel);
-                saveAndAddToList(games, allScrapedGames);
-                try {
-                    TimeUnit.SECONDS.sleep(rand);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
 //        wait time!
-            }
         }
+
     }
 
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getFirstPageUrl()).get();
+        Document document = Jsoup.connect(configurationModel.getUrlPage()).get();
         return document;
     }
 
     @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getGameListUrl() + i).get();
+        Document document = Jsoup.connect(configurationModel.getUrlPage() + i).get();
         return document;
     }
 
     @Override
     public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
-        Elements siteNumber = document.select(configurationModel.getLastPageSelector());
-        String lastSite = siteNumber.get(14).text();
+        Elements siteNumber = document.select(configurationModel.getLastPageSelector()).select("a");
+        String lastSite = siteNumber.last().text();
 
         return lastSite;
     }
@@ -162,7 +148,7 @@ public class GameOverGames implements ScrapInterface {
 
         Elements name = document.select("input[name]");
 
-        Element nams = name.get(16);
+        Element nams = name.get(4);
 
         String val = nams.attr("value");
         String[] id = val.split(",");
@@ -182,7 +168,7 @@ public class GameOverGames implements ScrapInterface {
 
         for (int i = 0; i < singleLinkList.size(); i++) {
             Game gameInfo = new Game();
-            gameInfo.setTitle(gameTitle[i].attr("alt"));
+            gameInfo.setTitle(gameTitle[i].text());
             gameInfo.setGameShopId(id[i]);
             gameInfo.setImg(gameImg[i].absUrl("src"));
             gameInfo.setPrice(gamePrice[i].text());
@@ -230,7 +216,7 @@ public class GameOverGames implements ScrapInterface {
 
 
     private Element[] getPrice(Document document, ConfigurationModel configurationModel, String[] id) {
-        Elements price = document.select(configurationModel.getPriceSelector());
+        Elements price = document.select(configurationModel.getPriceSelector()).select("span");
         price.remove(0);
         price.remove(price.size() - 1);
 

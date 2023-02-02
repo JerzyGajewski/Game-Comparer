@@ -26,7 +26,6 @@ public class NoGameKWGames implements ScrapInterface {
     static ConfigurationModel[] MODEL = {
             new ConfigurationModel(
                     "ps4",
-                    "https://www.nogame.pl/pl/c/PlayStation-4/140",
                     "https://www.nogame.pl/pl/c/PlayStation-4/140/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
@@ -36,7 +35,6 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "ps3",
-                    "https://www.nogame.pl/pl/c/PlayStation-3/60",
                     "https://www.nogame.pl/pl/c/PlayStation-3/60/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
@@ -46,7 +44,6 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "xbox360",
-                    "https://www.nogame.pl/pl/c/Xbox-360/59",
                     "https://www.nogame.pl/pl/c/Xbox-360/59/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
@@ -56,7 +53,6 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "xboxOne",
-                    "https://www.nogame.pl/pl/c/XBOX-ONE/162",
                     "https://www.nogame.pl/pl/c/XBOX-ONE/162/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
@@ -66,7 +62,6 @@ public class NoGameKWGames implements ScrapInterface {
                     ".products.viewphot .product"),
             new ConfigurationModel(
                     "switch",
-                    "https://www.nogame.pl/pl/c/Nintendo-Switch/221",
                     "https://www.nogame.pl/pl/c/Nintendo-Switch/221/",
                     ".products.viewphot .product .productname",
                     ".products.viewphot .product .price",
@@ -110,39 +105,30 @@ public class NoGameKWGames implements ScrapInterface {
         int rand = random.nextInt(15) + 1;
         Document document = connectToSite(configurationModel);
         String number = getPageNumbers(document, configurationModel);
-        if (number.equals(configurationModel.getFirstPageUrl())) {
-            List<Game> games = scrapGames(document, configurationModel);
+        int lastSiteNumber = Integer.parseInt(number);
+        for (int i = 1; i <= lastSiteNumber; i++) {
+            rand = random.nextInt(15) + 1;
+            Document document1 = connectToSiteBySiteNumber(configurationModel, i);
+            List<Game> games = scrapGames(document1, configurationModel);
             saveAndAddToList(games, allScrapedGames);
             try {
                 TimeUnit.SECONDS.sleep(rand);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        } else {
-            int lastSiteNumber = Integer.parseInt(number);
-            for (int i = 1; i <= lastSiteNumber; i++) {
-                rand = random.nextInt(15) + 1;
-                Document document1 = connectToSiteBySiteNumber(configurationModel, i);
-                List<Game> games = scrapGames(document1, configurationModel);
-                saveAndAddToList(games, allScrapedGames);
-                try {
-                    TimeUnit.SECONDS.sleep(rand);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
         }
+
     }
 
     @Override
     public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getFirstPageUrl()).get();
+        Document document = Jsoup.connect(configurationModel.getUrlPage()).get();
         return document;
     }
 
     @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getGameListUrl() + i).get();
+        Document document = Jsoup.connect(configurationModel.getUrlPage() + i).get();
         return document;
     }
 
@@ -153,7 +139,7 @@ public class NoGameKWGames implements ScrapInterface {
             String number = siteNumber.get(siteNumber.size() - 2).text();
             return number;
         } else {
-            return configurationModel.getFirstPageUrl();
+            return configurationModel.getUrlPage();
         }
     }
 

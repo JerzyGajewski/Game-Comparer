@@ -9,8 +9,7 @@ import lombok.Setter;
 public class ConfigurationModel {
 
     private String console;
-    private String firstPageUrl;
-    private String gameListUrl;
+    private String urlPage;
     private String titleSelector;
     private String priceSelector;
     private String imageSelector;
@@ -18,12 +17,11 @@ public class ConfigurationModel {
     private String notAvalable;
     private String gameId;
 
-    public ConfigurationModel(String console, String firstPageUrl, String gameListUrl, String titleSelector,
+    public ConfigurationModel(String console, String urlPage, String titleSelector,
                               String priceSelector, String imageSelector, String lastPageSelector,
                               String notAvalable, String gameId) {
         this.console = console;
-        this.firstPageUrl = firstPageUrl;
-        this.gameListUrl = gameListUrl;
+        this.urlPage = urlPage;
         this.titleSelector = titleSelector;
         this.priceSelector = priceSelector;
         this.imageSelector = imageSelector;
