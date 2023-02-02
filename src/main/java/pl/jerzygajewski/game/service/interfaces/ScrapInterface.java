@@ -13,11 +13,9 @@ public interface ScrapInterface {
 
     void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException;
 
-    Document connectToSite(ConfigurationModel configurationModel) throws IOException;
-
     Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException;
 
-    String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException;
+    int getPageNumbers(ConfigurationModel configurationModel) throws IOException;
 
     List<Game> scrapGames(Document document, ConfigurationModel configurationModel) throws IOException;
 

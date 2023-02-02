@@ -103,14 +103,11 @@ public class NoGameNHGames implements ScrapInterface {
     public void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException {
         Random random = new Random();
         int rand = random.nextInt(15) + 1;
-        Document document = connectToSite(configurationModel);
-        String number = getPageNumbers(document, configurationModel);
-
-        int lastSiteNumber = Integer.parseInt(number);
+        int lastSiteNumber = getPageNumbers(configurationModel);;
         for (int i = 1; i <= lastSiteNumber; i++) {
             rand = random.nextInt(15) + 1;
-            Document document1 = connectToSiteBySiteNumber(configurationModel, i);
-            List<Game> games = scrapGames(document1, configurationModel);
+            Document document = connectToSiteBySiteNumber(configurationModel, i);
+            List<Game> games = scrapGames(document, configurationModel);
             saveAndAddToList(games, allScrapedGames);
             try {
                 TimeUnit.SECONDS.sleep(rand);
@@ -122,26 +119,17 @@ public class NoGameNHGames implements ScrapInterface {
     }
 
     @Override
-    public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getUrlPage()).get();
-        return document;
-    }
-
-    @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
         Document document = Jsoup.connect(configurationModel.getUrlPage() + i).get();
         return document;
     }
 
     @Override
-    public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
+    public int getPageNumbers(ConfigurationModel configurationModel) throws IOException {
+        Document document = connectToSiteBySiteNumber(configurationModel, 1);
         Elements siteNumber = document.select(configurationModel.getLastPageSelector());
-        if (siteNumber.size() > 0) {
-            String number = siteNumber.get(siteNumber.size() - 2).text();
-            return number;
-        } else {
-            return configurationModel.getUrlPage();
-        }
+
+        return Integer.parseInt(siteNumber.get(siteNumber.size() - 2).text());
     }
 
     @Override

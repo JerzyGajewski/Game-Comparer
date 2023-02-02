@@ -29,7 +29,7 @@ public class GameOverGames implements ScrapInterface {
             "product__price",
             "product__thumb",
             "pagination-box",
-            ".kom",
+            "product__aval",
             "input[name]"
     ),
             new ConfigurationModel(
@@ -39,7 +39,7 @@ public class GameOverGames implements ScrapInterface {
                     "product__price",
                     "product__thumb",
                     "pagination-box",
-                    ".kom",
+                    "product__aval",
                     "input[name]"
             ),
             new ConfigurationModel(
@@ -49,7 +49,7 @@ public class GameOverGames implements ScrapInterface {
                     "product__price",
                     "product__thumb",
                     "pagination-box",
-                    ".kom",
+                    "product__aval",
                     "input[name]"
             ),
             new ConfigurationModel(
@@ -59,7 +59,7 @@ public class GameOverGames implements ScrapInterface {
                     "product__price",
                     "product__thumb",
                     "pagination-box",
-                    ".kom",
+                    "product__aval",
                     "input[name]"
             ),
             new ConfigurationModel(
@@ -69,7 +69,7 @@ public class GameOverGames implements ScrapInterface {
                     "product__price",
                     "product__thumb",
                     "pagination-box",
-                    ".kom",
+                    "product__aval",
                     "input[name]"
             )};
 
@@ -93,7 +93,6 @@ public class GameOverGames implements ScrapInterface {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
         removeGame(allScrapedGames);
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.GAMEOVER.getName());
         shopInfo.setScrapDate(LocalDateTime.now());
@@ -104,13 +103,11 @@ public class GameOverGames implements ScrapInterface {
     public void startScrapping(ConfigurationModel configurationModel, List<Game> allScrapedGames) throws IOException {
         Random random = new Random();
         int rand = random.nextInt(15) + 1;
-        Document document = connectToSite(configurationModel);
-        String number = getPageNumbers(document, configurationModel);
-        int lastSiteNumber = Integer.parseInt(number);
+        int lastSiteNumber = getPageNumbers(configurationModel);
         for (int i = 1; i <= lastSiteNumber; i++) {
             rand = random.nextInt(15) + 1;
-            Document document1 = connectToSiteBySiteNumber(configurationModel, i);
-            List<Game> games = scrapGames(document1, configurationModel);
+            Document document = connectToSiteBySiteNumber(configurationModel, i);
+            List<Game> games = scrapGames(document, configurationModel);
             saveAndAddToList(games, allScrapedGames);
             try {
                 TimeUnit.SECONDS.sleep(rand);
@@ -123,23 +120,15 @@ public class GameOverGames implements ScrapInterface {
     }
 
     @Override
-    public Document connectToSite(ConfigurationModel configurationModel) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getUrlPage()).get();
-        return document;
-    }
-
-    @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getUrlPage() + i).get();
-        return document;
+        return Jsoup.connect(configurationModel.getUrlPage() + i).get();
     }
 
-    @Override
-    public String getPageNumbers(Document document, ConfigurationModel configurationModel) throws IOException {
-        Elements siteNumber = document.select(configurationModel.getLastPageSelector()).select("a");
-        String lastSite = siteNumber.last().text();
 
-        return lastSite;
+    public int getPageNumbers(ConfigurationModel configurationModel) throws IOException {
+        Document document = connectToSiteBySiteNumber(configurationModel, 1);
+        Elements siteNumber = document.select(configurationModel.getLastPageSelector()).select("a");
+        return Integer.parseInt(siteNumber.last().text());
     }
 
 
@@ -161,7 +150,7 @@ public class GameOverGames implements ScrapInterface {
 
         List<String> singleLinkList = getGamesLinks(document);
 
-        String[] avalableGames = getAvalable(document, id);
+        Element[] avalableGames = getAvalable(document, configurationModel, id);
 
         List<Game> titles = new ArrayList<>();
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.GAMEOVER.getName());
@@ -172,7 +161,7 @@ public class GameOverGames implements ScrapInterface {
             gameInfo.setGameShopId(id[i]);
             gameInfo.setImg(gameImg[i].absUrl("src"));
             gameInfo.setPrice(gamePrice[i].text());
-            gameInfo.setAvalable(avalableGames[i]);
+            gameInfo.setAvalable(avalableGames[i].text());
             gameInfo.setConsoleType(configurationModel.getConsole());
             gameInfo.setShop(shopInfo);
 
@@ -183,20 +172,12 @@ public class GameOverGames implements ScrapInterface {
     }
 
 
-    private String[] getAvalable(Document document, String[] id) {
-        Elements ava = document.select(".kom").select("div").select("span");
-        List<String> avalable = new ArrayList<>();
-        for (Element e : ava) {
-            if (e.attr("class").contains("dost")) {
-                avalable.add(e.attr("title"));
-            }
-        }
-        String[] avalableGames = new String[id.length];
-        avalable.toArray(avalableGames);
+    private Element[] getAvalable(Document document, ConfigurationModel configurationModel, String[] id) {
+        Elements ava = document.select(configurationModel.getNotAvalable());
 
         Element[] aval = new Element[id.length];
         ava.toArray(aval);
-        return avalableGames;
+        return aval;
     }
 
 
