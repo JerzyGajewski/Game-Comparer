@@ -9,7 +9,6 @@ import pl.jerzygajewski.game.service.interfaces.MainScrappingService;
 import pl.jerzygajewski.game.utill.GameOverGames;
 import pl.jerzygajewski.game.utill.NoGameKWGames;
 import pl.jerzygajewski.game.utill.NoGameNHGames;
-import pl.jerzygajewski.game.utill.ShopGraczGames;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,16 +19,14 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class MainScrappingServiceImpl implements MainScrappingService {
     ShopRepository shopRepository;
-    ShopGraczGames shopGraczGames;
     NoGameKWGames noGameKWGames;
     GameOverGames  gameOverGames;
     NoGameNHGames noGameNHGames;
 
 
-    public MainScrappingServiceImpl(ShopRepository shopRepository, ShopGraczGames shopGraczGames,
+    public MainScrappingServiceImpl(ShopRepository shopRepository,
                                     NoGameKWGames noGameKWGames, GameOverGames gameOverGames, NoGameNHGames noGameNHGames) {
         this.shopRepository = shopRepository;
-        this.shopGraczGames = shopGraczGames;
         this.noGameKWGames = noGameKWGames;
         this.gameOverGames = gameOverGames;
         this.noGameNHGames = noGameNHGames;
@@ -87,7 +84,6 @@ public class MainScrappingServiceImpl implements MainScrappingService {
 
             executorService.submit(() -> {
                 try {
-                    shopGraczGames.startScrapingForAllConsoles();
                     noGameNHGames.startScrapingForAllConsoles();
                     gameOverGames.startScrapingForAllConsoles();
                     noGameKWGames.startScrapingForAllConsoles();

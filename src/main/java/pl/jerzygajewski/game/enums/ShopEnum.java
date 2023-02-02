@@ -33,18 +33,6 @@ public enum ShopEnum {
             "krakow@gameover.pl",
             "+48507194536",
 "!1m14!1m8!1m3!1d10244.786734069083!2d19.9465085!3d50.0638781!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6b2a70fa99a9256a!2sGame%20Over!5e0!3m2!1sen!2spl!4v1604023827934!5m2!1sen!2spl"
-    ),
-//            "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d10244.786734069083!2d19.9465085!3d50.0638781!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6b2a70fa99a9256a!2sGame%20Over!5e0!3m2!1sen!2spl!4v1604023827934!5m2!1sen!2spl"),
-
-    SHOPGRACZ("ShopGracz", "Bolesława Limanowskiego 16, 30-551 Kraków",
-            "Monday " + "11AM–8PM\n" + "\n" +
-                    "Tuesday " + "11AM–8PM\n" + "\n" +
-                    "Wednesday" + "11AM–8PM\n" + "\n" + "Thursday" + "11AM–8PM\n" + "\n" +
-                    "Friday" + "11AM–8PM\n" + "\n" + "Saturday" + "11AM–2PM\n" + "\n" +
-                    "Sunday" + "(All Saints' Day)\n" + "Closed\n" + "Hours might differ\n",
-            "sklep@shopgracz.pl",
-            "+48608195190",
-"!1m18!1m12!1m3!1d2562.2127594934313!2d19.95047781568285!3d50.04484557942138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47165b442e8bbc6f%3A0xbc6417b1f2f072fc!2sShop%20Gracz!5e0!3m2!1sen!2spl!4v1603793169205!5m2!1sen!2spl"
     );
 //            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2562.2127594934313!2d19.95047781568285!3d50.04484557942138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47165b442e8bbc6f%3A0xbc6417b1f2f072fc!2sShop%20Gracz!5e0!3m2!1sen!2spl!4v1603793169205!5m2!1sen!2spl");
 
