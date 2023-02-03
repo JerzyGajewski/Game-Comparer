@@ -127,7 +127,7 @@ public class GameOverGames implements ScrapInterface {
 
     public int getPageNumbers(ConfigurationModel configurationModel) throws IOException {
         Document document = connectToSiteBySiteNumber(configurationModel, 1);
-        Elements siteNumber = document.select(configurationModel.getLastPageSelector()).select("a");
+        Elements siteNumber = document.getElementsByClass(configurationModel.getLastPageSelector()).select("a");
         return Integer.parseInt(siteNumber.last().text());
     }
 
@@ -148,7 +148,7 @@ public class GameOverGames implements ScrapInterface {
 
         Element[] gamePrice = getPrice(document, configurationModel, id);
 
-        List<String> singleLinkList = getGamesLinks(document);
+        List<String> singleLinkList = getGamesLinks(document, configurationModel);
 
         Element[] avalableGames = getAvalable(document, configurationModel, id);
 
@@ -173,7 +173,7 @@ public class GameOverGames implements ScrapInterface {
 
 
     private Element[] getAvalable(Document document, ConfigurationModel configurationModel, String[] id) {
-        Elements ava = document.select(configurationModel.getNotAvalable());
+        Elements ava = document.getElementsByClass(configurationModel.getNotAvalable());
 
         Element[] aval = new Element[id.length];
         ava.toArray(aval);
@@ -181,8 +181,8 @@ public class GameOverGames implements ScrapInterface {
     }
 
 
-    private List<String> getGamesLinks(Document document) {
-        Elements linkList = document.select(".kom").select("a");
+    private List<String> getGamesLinks(Document document, ConfigurationModel configurationModel) {
+        Elements linkList = document.getElementsByClass(configurationModel.getTitleSelector()).select("a");
         List<String> singleLinkList = new ArrayList<>();
         for (int i = 0; i < linkList.size(); i++) {
             if (i % 2 == 0) {
@@ -197,7 +197,7 @@ public class GameOverGames implements ScrapInterface {
 
 
     private Element[] getPrice(Document document, ConfigurationModel configurationModel, String[] id) {
-        Elements price = document.select(configurationModel.getPriceSelector()).select("span");
+        Elements price = document.getElementsByClass(configurationModel.getPriceSelector()).select("span");
         price.remove(0);
         price.remove(price.size() - 1);
 
@@ -214,7 +214,7 @@ public class GameOverGames implements ScrapInterface {
     }
 
     private Element[] getTitle(Document document, ConfigurationModel configurationModel, String[] id) {
-        Elements names = document.getElementsByClass(configurationModel.getTitleSelector()).select("a").select("img");
+        Elements names = document.getElementsByClass(configurationModel.getTitleSelector()).select("a");
         Element[] gameTitle = new Element[id.length];
         names.toArray(gameTitle);
         return gameTitle;

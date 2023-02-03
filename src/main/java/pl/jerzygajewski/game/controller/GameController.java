@@ -39,7 +39,7 @@ public class GameController {
     @ResponseBody
     public String scrap() {
         mainScrappingService.getShopDataToApp();
-        mainScrappingService.editShopData();
+//        mainScrappingService.editShopData();
 
         try {
             mainScrappingService.getServiceToScrap();

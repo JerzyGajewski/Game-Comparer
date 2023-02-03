@@ -12,15 +12,13 @@ import pl.jerzygajewski.game.utill.NoGameNHGames;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class MainScrappingServiceImpl implements MainScrappingService {
     ShopRepository shopRepository;
     NoGameKWGames noGameKWGames;
-    GameOverGames  gameOverGames;
+    GameOverGames gameOverGames;
     NoGameNHGames noGameNHGames;
 
 
@@ -53,8 +51,8 @@ public class MainScrappingServiceImpl implements MainScrappingService {
     @Override
     public void editShopData() {
         List<ShopInfo> shopInfoList = shopRepository.findAll();
-            for (ShopInfo shopInfo : shopInfoList) {
-        for (int i = 0; i < ShopEnum.values().length; i++) {
+        for (ShopInfo shopInfo : shopInfoList) {
+            for (int i = 0; i < ShopEnum.values().length; i++) {
                 shopDetails(i, shopInfo);
             }
         }
@@ -70,7 +68,7 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         shopRepository.save(shopInfo);
     }
 
-//    Factory Design Pattern
+    //    Factory Design Pattern
     @Scheduled(cron = "0 20 10 * * *")
     @Override
     public void getServiceToScrap() throws InterruptedException {
@@ -78,22 +76,18 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         long start = System.currentTimeMillis();
 
         List<ShopInfo> shop = shopRepository.findFirstByOrderByScrapDateAsc();
-        ExecutorService executorService = Executors.newFixedThreadPool(5);
         for (int i = 0; i < shop.size(); i++) {
-            synchronized (executorService) {
-
-            executorService.submit(() -> {
-                try {
-                    noGameNHGames.startScrapingForAllConsoles();
-                    gameOverGames.startScrapingForAllConsoles();
-                    noGameKWGames.startScrapingForAllConsoles();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+//                    noGameNHGames.startScrapingForAllConsoles();
+            try {
+                gameOverGames.startScrapingForAllConsoles();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            TimeUnit.SECONDS.sleep(10);
+//                    noGameKWGames.startScrapingForAllConsoles();
         }
+        TimeUnit.SECONDS.sleep(10);
+
+
         long end = System.currentTimeMillis();
         System.out.println(end - start);
     }
