@@ -79,11 +79,12 @@ public class MainScrappingServiceImpl implements MainScrappingService {
         for (int i = 0; i < shop.size(); i++) {
 //                    noGameNHGames.startScrapingForAllConsoles();
             try {
-                gameOverGames.startScrapingForAllConsoles();
+//                noGameNHGames.startScrapingForAllConsoles();
+//                gameOverGames.startScrapingForAllConsoles();
+                noGameKWGames.startScrapingForAllConsoles();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-//                    noGameKWGames.startScrapingForAllConsoles();
         }
         TimeUnit.SECONDS.sleep(10);
 

@@ -137,9 +137,9 @@ public class GameOverGames implements ScrapInterface {
 
         Elements name = document.select("input[name]");
 
-        Element nams = name.get(4);
+        Element names = name.get(4);
 
-        String val = nams.attr("value");
+        String val = names.attr("value");
         String[] id = val.split(",");
 
         Element[] gameTitle = getTitle(document, configurationModel, id);
@@ -150,7 +150,7 @@ public class GameOverGames implements ScrapInterface {
 
         List<String> singleLinkList = getGamesLinks(document, configurationModel);
 
-        Element[] avalableGames = getAvalable(document, configurationModel, id);
+        Element[] availableGames = getAvailable(document, configurationModel, id);
 
         List<Game> titles = new ArrayList<>();
         ShopInfo shopInfo = shopRepository.findByName(ShopEnum.GAMEOVER.getName());
@@ -161,7 +161,7 @@ public class GameOverGames implements ScrapInterface {
             gameInfo.setGameShopId(id[i]);
             gameInfo.setImg(gameImg[i].absUrl("src"));
             gameInfo.setPrice(gamePrice[i].text());
-            gameInfo.setAvalable(avalableGames[i].text());
+            gameInfo.setAvalable(availableGames[i].text());
             gameInfo.setConsoleType(configurationModel.getConsole());
             gameInfo.setShop(shopInfo);
 
@@ -172,7 +172,7 @@ public class GameOverGames implements ScrapInterface {
     }
 
 
-    private Element[] getAvalable(Document document, ConfigurationModel configurationModel, String[] id) {
+    private Element[] getAvailable(Document document, ConfigurationModel configurationModel, String[] id) {
         Elements ava = document.getElementsByClass(configurationModel.getNotAvalable());
 
         Element[] aval = new Element[id.length];

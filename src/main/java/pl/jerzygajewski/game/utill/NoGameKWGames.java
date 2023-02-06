@@ -120,8 +120,7 @@ public class NoGameKWGames implements ScrapInterface {
 
     @Override
     public Document connectToSiteBySiteNumber(ConfigurationModel configurationModel, int i) throws IOException {
-        Document document = Jsoup.connect(configurationModel.getUrlPage() + i).get();
-        return document;
+        return Jsoup.connect(configurationModel.getUrlPage() + i).get();
     }
 
     @Override
